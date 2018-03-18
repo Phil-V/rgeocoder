@@ -1,32 +1,21 @@
 [package]
-name = "rreverse"
+name = "pyrreverse"
 version = "0.1.0"
-authors = ["Grant Miner <xxgsoftware@gmail.com>"]
+authors = ["Philippe V. <philippe@arcadian.be>"]
+
+[lib]
+name = "pyrreverse"
+crate-type = ["cdylib"]
 
 [dependencies]
 kdtree = "^0.3.1"
 quick-csv = "^0.1.6"
 rustc-serialize = "^0.3.22"
 time = "^0.1.36"
-iron = "^0.6.0"
 queryst = "^1.0.1"
 lazy_static = "^0.2.1"
-hyper = "^0.11"
 futures = "*"
-shio = "^0.2.0"
 
-[[bin]]
-name = "cmd"
-path = "src/cmdline.rs"
-
-[[bin]]
-name = "iron"
-path = "src/iron.rs"
-
-[[bin]]
-name = "hyper"
-path = "src/hyper.rs"
-
-[[bin]]
-name = "shio"
-path = "src/shio.rs"
+[dependencies.pyo3]
+version = "0.2.5"
+# features = ["extension-module"]

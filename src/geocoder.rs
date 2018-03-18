@@ -81,7 +81,7 @@ pub fn print_record(record: &Record) {
 }
 
 mod tests {
-    
+
     #[test]
     fn it_works() {
         use super::*;
