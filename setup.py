@@ -15,20 +15,20 @@ except ImportError:
         from setuptools_rust import RustExtension
 
 
-# class PyTest(TestCommand):
-#     user_options = []
-#
-#     def run(self):
-#         self.run_command("test_rust")
-#
-#         import subprocess
-#         import sys
-#         errno = subprocess.call([sys.executable, '-m', 'pytest', 'tests'])
-#         raise SystemExit(errno)
+class PyTest(TestCommand):
+    user_options = []
+
+    def run(self):
+        self.run_command("test_rust")
+
+        import subprocess
+        import sys
+        errno = subprocess.call([sys.executable, '-m', 'pytest', 'tests'])
+        raise SystemExit(errno)
 
 setup_requires = ['setuptools-rust>=0.6.0']
 install_requires = []
-# tests_require = install_requires + ['pytest', 'pytest-benchmark']
+tests_require = install_requires + ['pytest', 'pytest-benchmark']
 
 setup(
     name='pyrreverse',
@@ -45,9 +45,9 @@ setup(
     packages=['pyrreverse'],
     rust_extensions=[RustExtension('pyrreverse._pyrreverse', 'Cargo.toml')],
     install_requires=install_requires,
-    # tests_require=tests_require,
+    tests_require=tests_require,
     setup_requires=setup_requires,
     include_package_data=True,
     zip_safe=False,
-    # cmdclass=dict(test=PyTest)
+    cmdclass=dict(test=PyTest)
 )

@@ -7,10 +7,11 @@ https://github.com/thampiman/reverse-geocoder), importable as a python module.
 # Build
 
 python ./setup.py bdist_wheel
-or
-python ./setup.py install
 
 # Tests
+
+python ./setup.py develop
+python ./setup.py test
 
 # Usage
 

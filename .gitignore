@@ -6,3 +6,6 @@ dist
 .eggs
 .vscode/
 .DS_Store
+__pycache__
+_pyrreverse.so
+.pytest_cache
