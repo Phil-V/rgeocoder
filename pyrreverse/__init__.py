@@ -3,8 +3,18 @@ from __future__ import absolute_import
 
 from ._pyrreverse import reverse_geocode
 
-__all__ = ['reverse_geocode', 'reverse_geocode_py']
+__all__ = ['reverse_geocode', 'ReverseGeocoder']
 
 
-def reverse_geocode_py(lon, lat):
-    return reverse_geocode(lon, lat)
+class ReverseGeocoder(object):
+    """"""
+
+    def __init__(self, lazy=True):
+        """"""
+        if not lazy:
+            # load the kdtree into mem
+            pass
+
+    def find(self, lat, lon):
+        """"""
+        return reverse_geocode(lat, lon)

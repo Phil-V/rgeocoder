@@ -5,5 +5,5 @@ import pytest
 import pyrreverse
 
 def test_can_reverse_geocode():
-    result = pyrreverse.reverse_geocode(5, 50.)
-    assert result == 'foobar'
+    result = pyrreverse.ReverseGeocoder().find(43.25338, 2.17808)
+    assert 'Alzonne' in result
