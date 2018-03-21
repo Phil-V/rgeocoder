@@ -1,4 +1,6 @@
 #![feature(proc_macro, specialization)]
+#[macro_use]
+extern crate lazy_static;
 extern crate rustc_serialize;
 extern crate time;
 extern crate pyo3;
@@ -7,6 +9,11 @@ use pyo3::prelude::*;
 mod geocoder;
 use geocoder::Locations;
 use geocoder::ReverseGeocoder;
+
+lazy_static! {
+    static ref LOCATIONS: Locations = Locations::from_file();
+    static ref GEOCODER: ReverseGeocoder<'static> = ReverseGeocoder::new(&LOCATIONS);
+}
 
 // add bindings to the generated python module
 // N.B: names: "librust2py" must be the name of the `.so` or `.pyd` file
@@ -28,10 +35,8 @@ fn init_mod(py: Python, m: &PyModule) -> PyResult<()> {
 
 // logic implemented as a normal rust function
 fn rust_reverse_geocode(a:f64, b:f64) -> String {
-    let loc = Locations::from_file();
-    let geocoder = ReverseGeocoder::new(&loc);
 
-    let record = geocoder.search(&[a, b]).expect("Nothing found.");
+    let record = GEOCODER.search(&[a, b]).expect("Nothing found.");
 
     format!("({}, {}): {} {} {} {}",
              record.lat,
