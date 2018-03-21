@@ -2,9 +2,9 @@
 
 extern crate quick_csv;
 extern crate kdtree;
+
 use self::kdtree::KdTree;
 use self::kdtree::distance::squared_euclidean;
-use time::PreciseTime;
 
 #[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
 pub struct Record {
@@ -22,7 +22,6 @@ pub struct Locations {
 
 impl Locations {
     pub fn from_file() -> Locations {
-        let start = PreciseTime::now();
         let mut records = Vec::new();
 
         let reader = quick_csv::Csv::from_file("cities.csv").unwrap().has_header(true);
@@ -31,10 +30,6 @@ impl Locations {
             let record: Record = read_record.unwrap().decode().unwrap();
             records.push(([record.lat, record.lon], record));
         }
-
-        let end = PreciseTime::now();
-
-        println!("{} ms to load cities.csv", start.to(end).num_milliseconds());
 
         Locations { records: records }
     }
@@ -53,12 +48,9 @@ impl<'a> ReverseGeocoder<'a> {
     }
 
     fn initialize(&mut self, loc: &'a Locations) {
-        let start = PreciseTime::now();
         for record in &loc.records {
             self.tree.add(&record.0, &record.1).unwrap();
         }
-        let end = PreciseTime::now();
-        println!("{} ms to build the KdTree", start.to(end).num_milliseconds());
     }
 
     pub fn search(&'a self, loc: &[f64; 2]) -> Option<&'a Record> {

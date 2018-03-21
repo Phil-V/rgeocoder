@@ -2,7 +2,6 @@
 #[macro_use]
 extern crate lazy_static;
 extern crate rustc_serialize;
-extern crate time;
 extern crate pyo3;
 use pyo3::prelude::*;
 
