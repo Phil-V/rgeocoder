@@ -14,20 +14,25 @@ lazy_static! {
     static ref GEOCODER: ReverseGeocoder<'static> = ReverseGeocoder::new(&LOCATIONS);
 }
 
+/// TODO: write some docs here
 #[py::modinit(_pyrreverse)]
 fn init_mod(py: Python, m: &PyModule) -> PyResult<()> {
 
+    /// Reverse-geocode a set of coordinates.
     #[pyfn(m, "reverse_geocode")]
-    fn reverse_geocode(a:f64, b:f64) -> PyResult<(f64, f64, String, String, String, String)> {
-        let record = GEOCODER.search(&[a, b]).expect("Nothing found.");
-        Ok((
-            record.lat,
-            record.lon,
-            record.name.clone(),
-            record.admin1.clone(),
-            record.admin2.clone(),
-            record.admin3.clone()
-        ))
+    fn reverse_geocode(lat:f64, lon:f64) -> PyResult<Option<(f64, f64, String, String, String, String)>> {
+        if let Some(record) = GEOCODER.search(&[lat, lon]) {
+            Ok(Some((
+                record.lat,
+                record.lon,
+                record.name.clone(),
+                record.admin1.clone(),
+                record.admin2.clone(),
+                record.cc.clone()
+            )))
+        } else {
+            Ok(None)
+        }
     }
 
     Ok(())

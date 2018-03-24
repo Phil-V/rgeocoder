@@ -13,7 +13,7 @@ pub struct Record {
     pub name: String,
     pub admin1: String,
     pub admin2: String,
-    pub admin3: String,
+    pub cc: String,
 }
 
 pub struct Locations {
@@ -71,7 +71,7 @@ pub fn print_record(record: &Record) {
              record.name,
              record.admin1,
              record.admin2,
-             record.admin3);
+             record.cc);
 }
 
 mod tests {
