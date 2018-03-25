@@ -5,6 +5,10 @@ extern crate kdtree;
 
 use self::kdtree::KdTree;
 use self::kdtree::distance::squared_euclidean;
+use self::kdtree::kdtree::ErrorKind;
+
+use self::quick_csv::error::Error;
+
 
 #[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
 pub struct Record {
@@ -21,17 +25,17 @@ pub struct Locations {
 }
 
 impl Locations {
-    pub fn from_file() -> Locations {
+    pub fn from_file() -> Result<Locations, Error> {
         let mut records = Vec::new();
 
-        let reader = quick_csv::Csv::from_file("cities.csv").unwrap().has_header(true);
+        let reader = quick_csv::Csv::from_file("cities.csv")?.has_header(true);
 
         for read_record in reader {
-            let record: Record = read_record.unwrap().decode().unwrap();
+            let record: Record = read_record?.decode()?;
             records.push(([record.lat, record.lon], record));
         }
 
-        Locations { records: records }
+        Ok(Locations { records: records })
     }
 }
 
@@ -40,25 +44,24 @@ pub struct ReverseGeocoder<'a> {
 }
 
 impl<'a> ReverseGeocoder<'a> {
-    pub fn new(loc: &'a Locations) -> ReverseGeocoder<'a> {
+    pub fn new(loc: &'a Locations) -> Result<ReverseGeocoder<'a>, ErrorKind> {
         let mut reverse_geocoder =
             ReverseGeocoder::<'a> { tree: KdTree::new_with_capacity(2, loc.records.len()) };
-        reverse_geocoder.initialize(loc);
-        reverse_geocoder
+        reverse_geocoder.initialize(loc)?;
+        Ok(reverse_geocoder)
     }
 
-    fn initialize(&mut self, loc: &'a Locations) {
+    fn initialize(&mut self, loc: &'a Locations) -> Result<(), ErrorKind> {
         for record in &loc.records {
-            self.tree.add(&record.0, &record.1).unwrap();
+            self.tree.add(&record.0, &record.1)?;
         }
+        Ok(())
     }
 
     pub fn search(&'a self, loc: &[f64; 2]) -> Option<&'a Record> {
-        let nearest = self.tree.nearest(loc, 1, &squared_euclidean).unwrap();
-        if nearest.is_empty() {
-            None
-        } else {
-            Some(&nearest[0].1)
+        match self.tree.nearest(loc, 1, &squared_euclidean) {
+            Ok(nearest) => if nearest.is_empty() { None } else { Some(&nearest[0].1) },
+            Err(_) => None
         }
     }
 }
@@ -79,8 +82,8 @@ mod tests {
     #[test]
     fn it_works() {
         use super::*;
-        let loc = Locations::from_file();
-        let geocoder = ReverseGeocoder::new(&loc);
+        let loc = Locations::from_file().unwrap();
+        let geocoder = ReverseGeocoder::new(&loc).unwrap();
         let y = geocoder.search(&[44.962786, -93.344722]);
         assert_eq!(y.is_some(), true);
         let slp = y.unwrap();
