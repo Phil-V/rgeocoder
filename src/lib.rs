@@ -53,6 +53,44 @@ lazy_static! {
     };
 }
 
+#[py::class]
+struct PyReverseGeocoder<'b> {
+    path: String,
+    geocoder: ReverseGeocoder<'b>,
+    locations: Locations,
+    token: PyToken
+}
+
+#[py::methods]
+impl<'b> PyReverseGeocoder<'b> {
+
+    #[new]
+    fn __new__(obj: &PyRawObject, path: String) -> PyResult<()> {
+        let locations = Locations::from_file().unwrap();
+        let geocoder = ReverseGeocoder::new(&locations).unwrap();
+        obj.init(|token| PyReverseGeocoder::<'b> {
+            path: path,
+            geocoder: geocoder,
+            token: token
+        })
+    }
+
+    fn find(&self, lat: f64, lon: f64) -> PyResult<Option<(f64, f64, String, String, String, String)>> {
+        if let Some(record) = self.geocoder.search(&[lat, lon]) {
+            Ok(Some((
+                record.lat,
+                record.lon,
+                record.name.clone(),
+                record.admin1.clone(),
+                record.admin2.clone(),
+                record.cc.clone()
+            )))
+        } else {
+            Ok(None)
+        }
+    }
+}
+
 /// TODO: write some docs here
 #[py::modinit(_pyrreverse)]
 fn init_mod(py: Python, m: &PyModule) -> PyResult<()> {
@@ -77,6 +115,6 @@ fn init_mod(py: Python, m: &PyModule) -> PyResult<()> {
             Ok(None)
         }
     }
-
+    m.add_class::<PyReverseGeocoder>()?;
     Ok(())
 }
