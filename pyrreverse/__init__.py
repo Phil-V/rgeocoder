@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from ._pyrreverse import reverse_geocode as _reverse_geocode
+# from ._pyrreverse import reverse_geocode as _reverse_geocode
 from ._pyrreverse import PyReverseGeocoder
 
-__all__ = ['_reverse_geocode', 'find']
+# __all__ = ['_reverse_geocode', 'find']
 
 
 # def find(lat, lon):
@@ -17,15 +17,24 @@ __all__ = ['_reverse_geocode', 'find']
 #     raise NotImplementedError()
 
 
-def find(lat, lon):
-    """Find the location closest to the coordinates.
+class ReverseGeocoder(object):
 
-    Returns a :class:`ReverseGeocoderResult` object representing a dataset entry.
-    """
-    result = PyReverseGeocoder('foo').find(lat, lon)
-    if result:
-        return ReverseGeocoderResult(*result)
-    raise NotImplementedError()
+    def __init__(self):
+        self.geocoder = PyReverseGeocoder('foo')
+
+    def find(self, lat, lon):
+        """Find the location closest to the coordinates.
+
+        Returns a :class:`ReverseGeocoderResult` object representing a dataset entry.
+        """
+        result = self.geocoder.find(lat, lon)
+        if result:
+            return ReverseGeocoderResult(*result)
+        raise NotImplementedError()
+
+
+def find(lat, lon):
+    return ReverseGeocoder().find(lat, lon)
 
 
 class ReverseGeocoderResult(object):

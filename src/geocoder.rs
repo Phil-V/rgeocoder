@@ -39,32 +39,38 @@ impl Locations {
     }
 }
 
-pub struct ReverseGeocoder<'a> {
-    tree: KdTree<&'a Record, &'a [f64; 2]>,
+pub struct ReverseGeocoder {
+    tree: KdTree<Record, [f64; 2]>,
+    locations: Locations,
 }
 
-impl<'a> ReverseGeocoder<'a> {
-    pub fn new(loc: &'a Locations) -> Result<ReverseGeocoder<'a>, ErrorKind> {
+impl ReverseGeocoder {
+    pub fn new() -> Result<ReverseGeocoder, ErrorKind> {
+        let loc = Locations::from_file().unwrap();
         let mut reverse_geocoder =
-            ReverseGeocoder::<'a> { tree: KdTree::new_with_capacity(2, loc.records.len()) };
-        reverse_geocoder.initialize(loc)?;
+            ReverseGeocoder {
+                tree: KdTree::new_with_capacity(2, loc.records.len()),
+                locations: loc
+            };
+        reverse_geocoder.initialize()?;
         Ok(reverse_geocoder)
     }
 
-    fn initialize(&mut self, loc: &'a Locations) -> Result<(), ErrorKind> {
-        for record in &loc.records {
-            self.tree.add(&record.0, &record.1)?;
+    fn initialize(&mut self) -> Result<(), ErrorKind> {
+        for record in &self.locations.records {
+            self.tree.add(record.0.to_owned(), record.1.to_owned())?;
         }
         Ok(())
     }
 
-    pub fn search(&'a self, loc: &[f64; 2]) -> Option<&'a Record> {
+    pub fn search<'a>(&'a self, loc: &[f64; 2]) -> Option<&'a Record> {
         match self.tree.nearest(loc, 1, &squared_euclidean) {
             Ok(nearest) => if nearest.is_empty() { None } else { Some(&nearest[0].1) },
             Err(_) => None
         }
     }
 }
+
 
 #[allow(dead_code)]
 pub fn print_record(record: &Record) {
@@ -82,8 +88,8 @@ mod tests {
     #[test]
     fn it_works() {
         use super::*;
-        let loc = Locations::from_file().unwrap();
-        let geocoder = ReverseGeocoder::new(&loc).unwrap();
+        // let loc = Locations::from_file().unwrap();
+        let geocoder = ReverseGeocoder::new().unwrap();
         let y = geocoder.search(&[44.962786, -93.344722]);
         assert_eq!(y.is_some(), true);
         let slp = y.unwrap();

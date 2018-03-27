@@ -43,32 +43,30 @@ impl std::convert::From<WipError> for PyErr {
     }
 }
 
-lazy_static! {
-    static ref LOCATIONS: Result<Locations, Error> = Locations::from_file();
-    static ref GEOCODER: Result<ReverseGeocoder<'static>, WipError> = {
-        match *LOCATIONS {
-            Ok(ref locs) => ReverseGeocoder::new(&locs).map_err(|_| WipError),
-            Err(_) => Err(WipError)
-        }
-    };
-}
+// lazy_static! {
+//     static ref LOCATIONS: Result<Locations, Error> = Locations::from_file();
+//     static ref GEOCODER: Result<ReverseGeocoder, WipError> = {
+//         match *LOCATIONS {
+//             Ok(ref locs) => ReverseGeocoder::new().map_err(|_| WipError),
+//             Err(_) => Err(WipError)
+//         }
+//     };
+// }
 
 #[py::class]
-struct PyReverseGeocoder<'b> {
+struct PyReverseGeocoder {
     path: String,
-    geocoder: ReverseGeocoder<'b>,
-    locations: Locations,
+    geocoder: ReverseGeocoder,
     token: PyToken
 }
 
 #[py::methods]
-impl<'b> PyReverseGeocoder<'b> {
+impl PyReverseGeocoder {
 
     #[new]
     fn __new__(obj: &PyRawObject, path: String) -> PyResult<()> {
-        let locations = Locations::from_file().unwrap();
-        let geocoder = ReverseGeocoder::new(&locations).unwrap();
-        obj.init(|token| PyReverseGeocoder::<'b> {
+        let geocoder = ReverseGeocoder::new().unwrap();
+        obj.init(|token| PyReverseGeocoder {
             path: path,
             geocoder: geocoder,
             token: token
@@ -96,25 +94,25 @@ impl<'b> PyReverseGeocoder<'b> {
 fn init_mod(py: Python, m: &PyModule) -> PyResult<()> {
 
     /// Reverse-geocode a set of coordinates.
-    #[pyfn(m, "reverse_geocode")]
-    fn reverse_geocode(lat:f64, lon:f64) -> PyResult<Option<(f64, f64, String, String, String, String)>> {
-        let geocoder = match *GEOCODER {
-            Ok(ref gc) => gc,
-            Err(_) => return Err(PyErr::new::<exc::TypeError, _>("Error")) // TODO: handle conversion
-        };
-        if let Some(record) = geocoder.search(&[lat, lon]) {
-            Ok(Some((
-                record.lat,
-                record.lon,
-                record.name.clone(),
-                record.admin1.clone(),
-                record.admin2.clone(),
-                record.cc.clone()
-            )))
-        } else {
-            Ok(None)
-        }
-    }
+    // #[pyfn(m, "reverse_geocode")]
+    // fn reverse_geocode(lat:f64, lon:f64) -> PyResult<Option<(f64, f64, String, String, String, String)>> {
+    //     let geocoder = match *GEOCODER {
+    //         Ok(ref gc) => gc,
+    //         Err(_) => return Err(PyErr::new::<exc::TypeError, _>("Error")) // TODO: handle conversion
+    //     };
+    //     if let Some(record) = geocoder.search(&[lat, lon]) {
+    //         Ok(Some((
+    //             record.lat,
+    //             record.lon,
+    //             record.name.clone(),
+    //             record.admin1.clone(),
+    //             record.admin2.clone(),
+    //             record.cc.clone()
+    //         )))
+    //     } else {
+    //         Ok(None)
+    //     }
+    // }
     m.add_class::<PyReverseGeocoder>()?;
     Ok(())
 }
