@@ -1,5 +1,4 @@
-// from https://github.com/llambda/rust-reverse-geocoder/blob/master/src/geocoder.rs
-
+// based on https://github.com/llambda/rust-reverse-geocoder/blob/master/src/geocoder.rs
 extern crate quick_csv;
 extern crate kdtree;
 
@@ -39,26 +38,31 @@ impl Locations {
     }
 }
 
+fn records_from_file() -> impl IntoIterator<Item=([f64; 2], Record)> {
+    let reader = quick_csv::Csv::from_file("cities.csv").unwrap().has_header(true);
+    return reader.filter_map(|line| {
+        let record: Record = line.unwrap().decode().unwrap();
+        Some(([record.lat, record.lon], record))
+    });
+}
+
 pub struct ReverseGeocoder {
     tree: KdTree<Record, [f64; 2]>,
-    locations: Locations,
 }
 
 impl ReverseGeocoder {
     pub fn new() -> Result<ReverseGeocoder, ErrorKind> {
-        let loc = Locations::from_file().unwrap();
         let mut reverse_geocoder =
             ReverseGeocoder {
-                tree: KdTree::new_with_capacity(2, loc.records.len()),
-                locations: loc
+                tree: KdTree::new(2),
             };
         reverse_geocoder.initialize()?;
         Ok(reverse_geocoder)
     }
 
     fn initialize(&mut self) -> Result<(), ErrorKind> {
-        for record in &self.locations.records {
-            self.tree.add(record.0.to_owned(), record.1.to_owned())?;
+        for record in records_from_file() {
+            self.tree.add(record.0, record.1)?;
         }
         Ok(())
     }

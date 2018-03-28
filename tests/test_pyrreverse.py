@@ -5,8 +5,11 @@ import pytest
 import pyrreverse
 
 
-def test_can_reverse_geocode():
-    geocoder = pyrreverse.ReverseGeocoder()
+@pytest.fixture(scope="module")
+def geocoder():
+    return pyrreverse.ReverseGeocoder()
+
+def test_can_reverse_geocode(geocoder):
     result = geocoder.find(43.25338, 2.17808)
     assert result.name == 'Alzonne'
     result = geocoder.find(43.25338, 2.17808)
@@ -14,8 +17,7 @@ def test_can_reverse_geocode():
     result = geocoder.find(-6.16394, 39.19793)
     assert result.name == 'Zanzibar'
 
-def test_result():
-    geocoder = pyrreverse.ReverseGeocoder()
+def test_result(geocoder):
     result = geocoder.find(12.42167,42.89556)
     assert result.name == 'Alaili Dadda`'
     assert result.admin1 == 'Obock'
@@ -24,7 +26,7 @@ def test_result():
     assert result.lat == 12.42167
     assert result.lon == 42.89556
     assert result.__repr__() == '<ReverseGeocoderResult [12.4217, 42.8956]>'
-#
+
 def test_wrong_type():
     with pytest.raises(TypeError):
         pyrreverse.find('foo', 'bar')

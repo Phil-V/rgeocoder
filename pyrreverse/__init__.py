@@ -1,36 +1,37 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-# from ._pyrreverse import reverse_geocode as _reverse_geocode
-from ._pyrreverse import PyReverseGeocoder
+from ._pyrreverse import RustReverseGeocoder
 
-# __all__ = ['_reverse_geocode', 'find']
-
-
-# def find(lat, lon):
-#     """Find the location closest to the coordinates.
-#
-#     Returns a :class:`ReverseGeocoderResult` object representing a dataset entry.
-#     """
-#     result = _reverse_geocode(lat, lon)
-#     if result:
-#         return ReverseGeocoderResult(*result)
-#     raise NotImplementedError()
+__all__ = ['ReverseGeocoder', 'find']
 
 
 class ReverseGeocoder(object):
+    """"""
 
-    def __init__(self):
-        self.geocoder = PyReverseGeocoder('foo')
+    def __init__(self, lazy=True):
+        if not lazy:
+            self._initialize()
+
+    def _initialize(self):
+        self._rust_geocoder = RustReverseGeocoder('foo')
 
     def find(self, lat, lon):
         """Find the location closest to the coordinates.
 
         Returns a :class:`ReverseGeocoderResult` object representing a dataset entry.
         """
-        result = self.geocoder.find(lat, lon)
+        result = self._geocoder.find(lat, lon)
         if result:
             return ReverseGeocoderResult(*result)
         raise NotImplementedError()
+
+    @property
+    def _geocoder(self):
+        try:
+            return self._rust_geocoder
+        except AttributeError:
+            self._initialize()
+            return self._rust_geocoder
 
 
 def find(lat, lon):

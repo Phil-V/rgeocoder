@@ -1,5 +1,5 @@
-#![feature(proc_macro, specialization)]
-#[macro_use]
+#![feature(proc_macro, specialization, conservative_impl_trait)]
+
 extern crate lazy_static;
 extern crate rustc_serialize;
 extern crate kdtree;
@@ -8,7 +8,6 @@ extern crate pyo3;
 use pyo3::prelude::*;
 
 mod geocoder;
-use geocoder::Locations;
 use geocoder::ReverseGeocoder;
 
 use self::quick_csv::error::Error;
@@ -43,30 +42,20 @@ impl std::convert::From<WipError> for PyErr {
     }
 }
 
-// lazy_static! {
-//     static ref LOCATIONS: Result<Locations, Error> = Locations::from_file();
-//     static ref GEOCODER: Result<ReverseGeocoder, WipError> = {
-//         match *LOCATIONS {
-//             Ok(ref locs) => ReverseGeocoder::new().map_err(|_| WipError),
-//             Err(_) => Err(WipError)
-//         }
-//     };
-// }
-
 #[py::class]
-struct PyReverseGeocoder {
+struct RustReverseGeocoder {
     path: String,
     geocoder: ReverseGeocoder,
     token: PyToken
 }
 
 #[py::methods]
-impl PyReverseGeocoder {
+impl RustReverseGeocoder {
 
     #[new]
     fn __new__(obj: &PyRawObject, path: String) -> PyResult<()> {
         let geocoder = ReverseGeocoder::new().unwrap();
-        obj.init(|token| PyReverseGeocoder {
+        obj.init(|token| RustReverseGeocoder {
             path: path,
             geocoder: geocoder,
             token: token
@@ -91,28 +80,7 @@ impl PyReverseGeocoder {
 
 /// TODO: write some docs here
 #[py::modinit(_pyrreverse)]
-fn init_mod(py: Python, m: &PyModule) -> PyResult<()> {
-
-    /// Reverse-geocode a set of coordinates.
-    // #[pyfn(m, "reverse_geocode")]
-    // fn reverse_geocode(lat:f64, lon:f64) -> PyResult<Option<(f64, f64, String, String, String, String)>> {
-    //     let geocoder = match *GEOCODER {
-    //         Ok(ref gc) => gc,
-    //         Err(_) => return Err(PyErr::new::<exc::TypeError, _>("Error")) // TODO: handle conversion
-    //     };
-    //     if let Some(record) = geocoder.search(&[lat, lon]) {
-    //         Ok(Some((
-    //             record.lat,
-    //             record.lon,
-    //             record.name.clone(),
-    //             record.admin1.clone(),
-    //             record.admin2.clone(),
-    //             record.cc.clone()
-    //         )))
-    //     } else {
-    //         Ok(None)
-    //     }
-    // }
-    m.add_class::<PyReverseGeocoder>()?;
+fn init_mod(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_class::<RustReverseGeocoder>()?;
     Ok(())
 }
