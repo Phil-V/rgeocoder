@@ -38,36 +38,29 @@ impl Locations {
     }
 }
 
-fn records_from_file() -> impl IntoIterator<Item=([f64; 2], Record)> {
-    let reader = quick_csv::Csv::from_file("cities.csv").unwrap().has_header(true);
-    return reader.filter_map(|line| {
-        let record: Record = line.unwrap().decode().unwrap();
-        Some(([record.lat, record.lon], record))
-    });
-}
-
 pub struct ReverseGeocoder {
     tree: KdTree<Record, [f64; 2]>,
 }
 
 impl ReverseGeocoder {
     pub fn new() -> Result<ReverseGeocoder, ErrorKind> {
+        let locations = Locations::from_file().unwrap();
         let mut reverse_geocoder =
             ReverseGeocoder {
-                tree: KdTree::new(2),
+                tree: KdTree::new_with_capacity(2, locations.records.len()),
             };
-        reverse_geocoder.initialize()?;
+        reverse_geocoder.initialize(locations)?;
         Ok(reverse_geocoder)
     }
 
-    fn initialize(&mut self) -> Result<(), ErrorKind> {
-        for record in records_from_file() {
-            self.tree.add(record.0, record.1)?;
+    fn initialize(&mut self, locations: Locations) -> Result<(), ErrorKind> {
+        for record in locations.records {
+            self.tree.add(record.0, record.1).unwrap();
         }
         Ok(())
     }
 
-    pub fn search<'a>(&'a self, loc: &[f64; 2]) -> Option<&'a Record> {
+    pub fn search(&self, loc: &[f64; 2]) -> Option<&Record> {
         match self.tree.nearest(loc, 1, &squared_euclidean) {
             Ok(nearest) => if nearest.is_empty() { None } else { Some(&nearest[0].1) },
             Err(_) => None

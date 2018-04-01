@@ -27,16 +27,6 @@ def test_result(geocoder):
     assert result.lon == 42.89556
     assert result.__repr__() == '<ReverseGeocoderResult [12.4217, 42.8956]>'
 
-def test_wrong_type():
+def test_wrong_type(geocoder):
     with pytest.raises(TypeError):
-        pyrreverse.find('foo', 'bar')
-
-# def test_rust_func():
-#     result = pyrreverse._reverse_geocode(43.25338, 2.17808)
-#     assert result == (
-#         43.25338, 2.17808,
-#         'Alzonne',
-#         'Languedoc-Roussillon',
-#         'Departement de l\'Aude',
-#         'FR'
-#     )
+        geocoder.find('foo', 'bar')
