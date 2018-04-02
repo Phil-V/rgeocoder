@@ -1,4 +1,4 @@
-#![feature(proc_macro, specialization, conservative_impl_trait)]
+#![feature(proc_macro, specialization)]
 
 extern crate failure;
 extern crate kdtree;
