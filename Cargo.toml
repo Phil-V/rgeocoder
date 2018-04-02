@@ -8,10 +8,11 @@ name = "pyrreverse"
 crate-type = ["cdylib"]
 
 [dependencies]
-kdtree = "^0.3.1"
-quick-csv = "^0.1.6"
-rustc-serialize = "^0.3.22"
-lazy_static = "^0.2.1"
+kdtree = "0.4.0"
+quick-csv = "0.1.6"
+rustc-serialize = "0.3.22"
+lazy_static = "0.2.1"
+failure = "0.1.1"
 
 [dependencies.pyo3]
 version = "0.2.5"

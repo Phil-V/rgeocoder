@@ -1,12 +1,20 @@
 // based on https://github.com/llambda/rust-reverse-geocoder/blob/master/src/geocoder.rs
-extern crate quick_csv;
-extern crate kdtree;
 
-use self::kdtree::KdTree;
-use self::kdtree::distance::squared_euclidean;
-use self::kdtree::kdtree::ErrorKind;
+use kdtree::KdTree;
+use kdtree::distance::squared_euclidean;
 
-use self::quick_csv::error::Error;
+use quick_csv;
+use failure;
+use std;
+
+#[derive(Debug)]
+pub struct GeocoderError(failure::Error);
+
+impl<T: Into<failure::Error>> From<T> for GeocoderError {
+    fn from(t: T) -> GeocoderError { GeocoderError(t.into()) }
+}
+
+type Result<T> = std::result::Result<T, GeocoderError>;
 
 
 #[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
@@ -24,7 +32,7 @@ pub struct Locations {
 }
 
 impl Locations {
-    pub fn from_file() -> Result<Locations, Error> {
+    pub fn from_file() -> Result<Locations> {
         let mut records = Vec::new();
 
         let reader = quick_csv::Csv::from_file("cities.csv")?.has_header(true);
@@ -43,8 +51,8 @@ pub struct ReverseGeocoder {
 }
 
 impl ReverseGeocoder {
-    pub fn new() -> Result<ReverseGeocoder, ErrorKind> {
-        let locations = Locations::from_file().unwrap();
+    pub fn new() -> Result<ReverseGeocoder> {
+        let locations = Locations::from_file()?;
         let mut reverse_geocoder =
             ReverseGeocoder {
                 tree: KdTree::new_with_capacity(2, locations.records.len()),
@@ -53,9 +61,9 @@ impl ReverseGeocoder {
         Ok(reverse_geocoder)
     }
 
-    fn initialize(&mut self, locations: Locations) -> Result<(), ErrorKind> {
+    fn initialize(&mut self, locations: Locations) -> Result<()> {
         for record in locations.records {
-            self.tree.add(record.0, record.1).unwrap();
+            self.tree.add(record.0, record.1)?;
         }
         Ok(())
     }
@@ -85,7 +93,6 @@ mod tests {
     #[test]
     fn it_works() {
         use super::*;
-        // let loc = Locations::from_file().unwrap();
         let geocoder = ReverseGeocoder::new().unwrap();
         let y = geocoder.search(&[44.962786, -93.344722]);
         assert_eq!(y.is_some(), true);

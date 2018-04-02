@@ -5,42 +5,21 @@ extern crate rustc_serialize;
 extern crate kdtree;
 extern crate quick_csv;
 extern crate pyo3;
+extern crate failure;
+
 use pyo3::prelude::*;
+use pyo3::exc;
 
 mod geocoder;
 use geocoder::ReverseGeocoder;
 
-use self::quick_csv::error::Error;
 
-use std::error;
-use std::fmt;
-
-
-#[derive(Debug, Clone)]
-struct WipError;
-
-impl fmt::Display for WipError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "can't initialize the geocoder")
-    }
-}
-
-impl error::Error for WipError {
-    fn description(&self) -> &str {
-        "can't initialize the geocoder"
-    }
-
-    fn cause(&self) -> Option<&error::Error> {
-        // Generic error, underlying cause isn't tracked.
-        None
-    }
-}
-
-impl std::convert::From<WipError> for PyErr {
-    fn from(_err: WipError) -> PyErr {
+impl std::convert::From<geocoder::GeocoderError> for PyErr {
+    fn from(_err: geocoder::GeocoderError) -> PyErr {
         exc::OSError.into()
     }
 }
+
 
 #[py::class]
 struct RustReverseGeocoder {
@@ -54,7 +33,7 @@ impl RustReverseGeocoder {
 
     #[new]
     fn __new__(obj: &PyRawObject, path: String) -> PyResult<()> {
-        let geocoder = ReverseGeocoder::new().unwrap();
+        let geocoder = ReverseGeocoder::new()?;
         obj.init(|token| RustReverseGeocoder {
             path: path,
             geocoder: geocoder,
