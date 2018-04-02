@@ -11,11 +11,12 @@ use std;
 pub struct GeocoderError(failure::Error);
 
 impl<T: Into<failure::Error>> From<T> for GeocoderError {
-    fn from(t: T) -> GeocoderError { GeocoderError(t.into()) }
+    fn from(t: T) -> GeocoderError {
+        GeocoderError(t.into())
+    }
 }
 
 type Result<T> = std::result::Result<T, GeocoderError>;
-
 
 #[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
 pub struct Record {
@@ -53,10 +54,9 @@ pub struct ReverseGeocoder {
 impl ReverseGeocoder {
     pub fn new() -> Result<ReverseGeocoder> {
         let locations = Locations::from_file()?;
-        let mut reverse_geocoder =
-            ReverseGeocoder {
-                tree: KdTree::new_with_capacity(2, locations.records.len()),
-            };
+        let mut reverse_geocoder = ReverseGeocoder {
+            tree: KdTree::new_with_capacity(2, locations.records.len()),
+        };
         reverse_geocoder.initialize(locations)?;
         Ok(reverse_geocoder)
     }
@@ -70,22 +70,22 @@ impl ReverseGeocoder {
 
     pub fn search(&self, loc: &[f64; 2]) -> Option<&Record> {
         match self.tree.nearest(loc, 1, &squared_euclidean) {
-            Ok(nearest) => if nearest.is_empty() { None } else { Some(&nearest[0].1) },
-            Err(_) => None
+            Ok(nearest) => if nearest.is_empty() {
+                None
+            } else {
+                Some(&nearest[0].1)
+            },
+            Err(_) => None,
         }
     }
 }
 
-
 #[allow(dead_code)]
 pub fn print_record(record: &Record) {
-    println!("({}, {}): {} {} {} {}",
-             record.lat,
-             record.lon,
-             record.name,
-             record.admin1,
-             record.admin2,
-             record.cc);
+    println!(
+        "({}, {}): {} {} {} {}",
+        record.lat, record.lon, record.name, record.admin1, record.admin2, record.cc
+    );
 }
 
 mod tests {
