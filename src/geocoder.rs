@@ -8,15 +8,15 @@ use failure;
 use std;
 
 #[derive(Debug)]
-pub struct GeocoderError(failure::Error);
+pub struct Error(failure::Error);
 
-impl<T: Into<failure::Error>> From<T> for GeocoderError {
-    fn from(t: T) -> GeocoderError {
-        GeocoderError(t.into())
+impl<T: Into<failure::Error>> From<T> for Error {
+    fn from(t: T) -> Error {
+        Error(t.into())
     }
 }
 
-type Result<T> = std::result::Result<T, GeocoderError>;
+type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Clone, RustcDecodable, RustcEncodable)]
 pub struct Record {

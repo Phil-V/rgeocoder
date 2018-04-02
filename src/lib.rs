@@ -13,8 +13,8 @@ use pyo3::exc;
 mod geocoder;
 use geocoder::ReverseGeocoder;
 
-impl std::convert::From<geocoder::GeocoderError> for PyErr {
-    fn from(_err: geocoder::GeocoderError) -> PyErr {
+impl std::convert::From<geocoder::Error> for PyErr {
+    fn from(_err: geocoder::Error) -> PyErr {
         exc::OSError.into()
     }
 }
