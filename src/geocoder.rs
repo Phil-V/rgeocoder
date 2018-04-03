@@ -4,15 +4,59 @@ use kdtree::KdTree;
 use kdtree::distance::squared_euclidean;
 
 use quick_csv;
-use failure;
+use failure::{Backtrace, Context, Fail, ResultExt};
 use std;
+use std::fmt;
+use std::fmt::Display;
 
 #[derive(Debug)]
-pub struct Error(failure::Error);
+pub struct Error {
+    inner: Context<ErrorKind>,
+}
 
-impl<T: Into<failure::Error>> From<T> for Error {
-    fn from(t: T) -> Error {
-        Error(t.into())
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Fail)]
+pub enum ErrorKind {
+    #[fail(display = "Could not open the source csv file.")]
+    CsvReadError,
+    #[fail(display = "Could not parse the source csv file.")]
+    CsvParseError,
+    #[fail(display = "Could not initialize the kdtree.")]
+    InitializationError,
+}
+
+impl Fail for Error {
+    fn cause(&self) -> Option<&Fail> {
+        self.inner.cause()
+    }
+
+    fn backtrace(&self) -> Option<&Backtrace> {
+        self.inner.backtrace()
+    }
+}
+
+impl Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Display::fmt(&self.inner, f)
+    }
+}
+
+impl Error {
+    pub fn kind(&self) -> ErrorKind {
+        *self.inner.get_context()
+    }
+}
+
+impl From<ErrorKind> for Error {
+    fn from(kind: ErrorKind) -> Error {
+        Error {
+            inner: Context::new(kind),
+        }
+    }
+}
+
+impl From<Context<ErrorKind>> for Error {
+    fn from(inner: Context<ErrorKind>) -> Error {
+        Error { inner: inner }
     }
 }
 
@@ -36,10 +80,15 @@ impl Locations {
     pub fn from_file() -> Result<Locations> {
         let mut records = Vec::new();
 
-        let reader = quick_csv::Csv::from_file("cities.csv")?.has_header(true);
+        let reader = quick_csv::Csv::from_file("cities.csv")
+            .context(ErrorKind::CsvReadError)?
+            .has_header(true);
 
         for read_record in reader {
-            let record: Record = read_record?.decode()?;
+            let record: Record = read_record
+                .context(ErrorKind::CsvParseError)?
+                .decode()
+                .context(ErrorKind::CsvParseError)?;
             records.push(([record.lat, record.lon], record));
         }
 
@@ -63,7 +112,9 @@ impl ReverseGeocoder {
 
     fn initialize(&mut self, locations: Locations) -> Result<()> {
         for record in locations.records {
-            self.tree.add(record.0, record.1)?;
+            self.tree
+                .add(record.0, record.1)
+                .context(ErrorKind::InitializationError)?;
         }
         Ok(())
     }

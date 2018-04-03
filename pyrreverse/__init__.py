@@ -5,6 +5,13 @@ from ._pyrreverse import RustReverseGeocoder
 __all__ = ['ReverseGeocoder', 'find']
 
 
+class GeocoderException(Exception):
+    """Base class for all the reverse geocoder module exceptions."""
+
+class InitializationError(GeocoderException):
+    """Catching this error will catch all initialization-related errors."""
+
+
 class ReverseGeocoder(object):
     """"""
 
@@ -13,7 +20,14 @@ class ReverseGeocoder(object):
             self._initialize()
 
     def _initialize(self):
-        self._rust_geocoder = RustReverseGeocoder('foo')
+        try:
+            self._rust_geocoder = RustReverseGeocoder('foo')
+        except IOError:
+            raise InitializationError('Could not open the locations file.')
+        except ValueError:
+            raise InitializationError('Could not parse the CSV file.')
+        except RuntimeError:
+            raise InitializationError('Could not initialize the kdtree.')
 
     def find(self, lat, lon):
         """Find the location closest to the coordinates.

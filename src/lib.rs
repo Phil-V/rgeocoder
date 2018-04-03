@@ -10,12 +10,19 @@ extern crate rustc_serialize;
 use pyo3::prelude::*;
 use pyo3::exc;
 
+use failure::Fail;
+
 mod geocoder;
 use geocoder::ReverseGeocoder;
 
 impl std::convert::From<geocoder::Error> for PyErr {
-    fn from(_err: geocoder::Error) -> PyErr {
-        exc::OSError.into()
+    fn from(error: geocoder::Error) -> PyErr {
+        match error.kind() {
+            // still a bit hacky
+            geocoder::ErrorKind::CsvReadError => exc::IOError.into(),
+            geocoder::ErrorKind::CsvParseError => exc::ValueError.into(),
+            geocoder::ErrorKind::InitializationError => exc::RuntimeError.into(),
+        }
     }
 }
 
