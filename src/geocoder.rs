@@ -1,4 +1,5 @@
-// based on https://github.com/llambda/rust-reverse-geocoder/blob/master/src/geocoder.rs
+// Originally based on
+// https://github.com/llambda/rust-reverse-geocoder/blob/master/src/geocoder.rs
 
 use kdtree::KdTree;
 use kdtree::distance::squared_euclidean;

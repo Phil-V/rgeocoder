@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+import sys
 from ._pyrreverse import RustReverseGeocoder
-from .exceptions import GeocoderException, InitializationError
 
-__all__ = ['ReverseGeocoder', 'find']
 
+__all__ = ['ReverseGeocoder', 'InitializationError']
+
+
+class GeocoderException(Exception):
+    """Base class for all the reverse geocoder module exceptions."""
+
+class InitializationError(GeocoderException):
+    """Catching this error will catch all initialization-related errors."""
 
 
 class ReverseGeocoder(object):
@@ -17,15 +24,17 @@ class ReverseGeocoder(object):
     def _initialize(self):
         try:
             self._rust_geocoder = RustReverseGeocoder('foo')
-        except InitializationError:
-            print "properly caught exception"
+        except:
+            # Hacky workaround as these exceptions are not importable
+            # and dont inherit from Exception
+            e = sys.exc_info()[0]
+            if e.__class__ == '_pyrreverse._CsvReadError':
+                raise InitializationError('Could not open the locations file.')
+            if e.__class__ == '_pyrreverse._CsvParseError':
+                raise InitializationError('Could not parse the CSV file.')
+            if e.__class__ == '_pyrreverse._InitializationError':
+                raise InitializationError('Could not initialize the kdtree.')
             raise
-        # except IOError:
-        #     raise InitializationError('Could not open the locations file.')
-        # except ValueError:
-        #     raise InitializationError('Could not parse the CSV file.')
-        # except RuntimeError:
-        #     raise InitializationError('Could not initialize the kdtree.')
 
     def find(self, lat, lon):
         """Find the location closest to the coordinates.
@@ -44,10 +53,6 @@ class ReverseGeocoder(object):
         except AttributeError:
             self._initialize()
             return self._rust_geocoder
-
-
-def find(lat, lon):
-    return ReverseGeocoder().find(lat, lon)
 
 
 class ReverseGeocoderResult(object):

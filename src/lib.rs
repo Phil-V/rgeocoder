@@ -1,4 +1,4 @@
-#![feature(proc_macro, specialization, const_fn, const_ptr_null_mut)]
+#![feature(proc_macro, specialization)]
 extern crate failure;
 extern crate kdtree;
 extern crate lazy_static;
@@ -8,24 +8,23 @@ extern crate quick_csv;
 extern crate rustc_serialize;
 
 use pyo3::prelude::*;
-use pyo3::exc;
-
 use failure::Fail;
 
 mod geocoder;
 use geocoder::ReverseGeocoder;
 
-import_exception!(pyrreverse.exceptions, InitializationError);
+py_exception!(_pyrreverse, _CsvReadError);
+py_exception!(_pyrreverse, _CsvParseError);
+py_exception!(_pyrreverse, _InitializationError);
 
 impl std::convert::From<geocoder::Error> for PyErr {
     fn from(error: geocoder::Error) -> PyErr {
         match error.kind() {
-            // still a bit hacky
-            geocoder::ErrorKind::CsvReadError => {
-                PyErr::new::<InitializationError, _>("Could not open the locations csv file.").into()
+            geocoder::ErrorKind::CsvReadError => PyErr::new::<_CsvReadError, _>("").into(),
+            geocoder::ErrorKind::CsvParseError => PyErr::new::<_CsvParseError, _>("").into(),
+            geocoder::ErrorKind::InitializationError => {
+                PyErr::new::<_InitializationError, _>("").into()
             }
-            geocoder::ErrorKind::CsvParseError => exc::ValueError.into(),
-            geocoder::ErrorKind::InitializationError => exc::RuntimeError.into(),
         }
     }
 }

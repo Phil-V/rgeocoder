@@ -1,6 +1,6 @@
 # Python bindings to the Rust Reverse Geocoder
 
-A fast, offline reverse geocoder writtent in Rust
+A fast, offline reverse geocoder written in Rust
 (https://github.com/llambda/rust-reverse-geocoder, itself inspired by
 https://github.com/thampiman/reverse-geocoder), importable as a python module.
 
