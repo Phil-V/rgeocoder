@@ -11,6 +11,7 @@ use failure::Fail;
 
 mod geocoder;
 use geocoder::ReverseGeocoder;
+use geocoder::ErrorKind;
 
 // Will panic if not found in sys.path.
 import_exception!(pyrreverse.exceptions, InitializationError);
@@ -20,15 +21,9 @@ import_exception!(pyrreverse.exceptions, CsvParseError);
 impl std::convert::From<geocoder::Error> for PyErr {
     fn from(error: geocoder::Error) -> PyErr {
         match error.kind() {
-            geocoder::ErrorKind::CsvReadError => {
-                CsvReadError::new("Could not open the locations csv file.").into()
-            }
-            geocoder::ErrorKind::CsvParseError => {
-                CsvParseError::new("Could not parse the locations csv file.").into()
-            }
-            geocoder::ErrorKind::InitializationError => {
-                InitializationError::new("Could not initialize the KdTree.").into()
-            }
+            ErrorKind::CsvReadError => CsvReadError::new(format!("{}", error)).into(),
+            ErrorKind::CsvParseError => CsvParseError::new(format!("{}", error)).into(),
+            ErrorKind::InitializationError => InitializationError::new(format!("{}", error)).into(),
         }
     }
 }
