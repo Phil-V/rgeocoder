@@ -1,0 +1,19 @@
+include README.md
+
+recursive-include * cities.csv
+recursive-include tests *.py
+
+# we only want "release" artifacts, not "debug" artifacts
+# update this path if you move the rust folder
+recursive-include */rust/target/release *.so *.dylib *.dll *.lib
+# also don't end the path with a "/"
+
+recursive-include * *.h
+
+# This should help with the sdist
+recursive-include *  *.c *.rs *.toml
+
+recursive-exclude * __pycache__
+recursive-exclude * *.pyc
+recursive-exclude * *.pyo
+recursive-exclude * .DS_Store

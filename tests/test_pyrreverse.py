@@ -3,6 +3,7 @@ from __future__ import absolute_import
 
 import pytest
 import pyrreverse
+import pyrreverse.exceptions
 
 
 @pytest.fixture(scope="module")
@@ -30,3 +31,7 @@ def test_result(geocoder):
 def test_wrong_type(geocoder):
     with pytest.raises(TypeError):
         geocoder.find('foo', 'bar')
+
+def test_cant_open_file():
+    with pytest.raises(pyrreverse.exceptions.CsvReadError):
+        pyrreverse.ReverseGeocoder(path='foo.csv', lazy=False)

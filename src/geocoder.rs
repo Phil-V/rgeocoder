@@ -17,11 +17,11 @@ pub struct Error {
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Fail)]
 pub enum ErrorKind {
-    #[fail(display = "Could not open the source csv file.")]
+    #[fail(display = "Could not open the locations csv file.")]
     CsvReadError,
-    #[fail(display = "Could not parse the source csv file.")]
+    #[fail(display = "Could not parse the locations csv file.")]
     CsvParseError,
-    #[fail(display = "Could not initialize the kdtree.")]
+    #[fail(display = "Could not initialize the KdTree.")]
     InitializationError,
 }
 
@@ -78,10 +78,10 @@ pub struct Locations {
 }
 
 impl Locations {
-    pub fn from_file() -> Result<Locations> {
+    pub fn from_file(path: &str) -> Result<Locations> {
         let mut records = Vec::new();
 
-        let reader = quick_csv::Csv::from_file("cities.csv")
+        let reader = quick_csv::Csv::from_file(path)
             .context(ErrorKind::CsvReadError)?
             .has_header(true);
 
@@ -102,8 +102,8 @@ pub struct ReverseGeocoder {
 }
 
 impl ReverseGeocoder {
-    pub fn new() -> Result<ReverseGeocoder> {
-        let locations = Locations::from_file()?;
+    pub fn new(path: &str) -> Result<ReverseGeocoder> {
+        let locations = Locations::from_file(path)?;
         let mut reverse_geocoder = ReverseGeocoder {
             tree: KdTree::new_with_capacity(2, locations.records.len()),
         };
@@ -145,7 +145,12 @@ mod tests {
     #[test]
     fn it_works() {
         use super::*;
-        let geocoder = ReverseGeocoder::new().unwrap();
+        use std::path::PathBuf;
+
+        let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        path.push("pyrreverse/cities.csv");
+
+        let geocoder = ReverseGeocoder::new(path.to_str().unwrap()).unwrap();
         let y = geocoder.search(&[44.962786, -93.344722]);
         assert_eq!(y.is_some(), true);
         let slp = y.unwrap();

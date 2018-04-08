@@ -1,7 +1,6 @@
 #![feature(proc_macro, specialization)]
 extern crate failure;
 extern crate kdtree;
-extern crate lazy_static;
 #[macro_use]
 extern crate pyo3;
 extern crate quick_csv;
@@ -22,10 +21,10 @@ impl std::convert::From<geocoder::Error> for PyErr {
     fn from(error: geocoder::Error) -> PyErr {
         match error.kind() {
             geocoder::ErrorKind::CsvReadError => {
-                CsvReadError::new("Could not open the csv file.").into()
+                CsvReadError::new("Could not open the locations csv file.").into()
             }
             geocoder::ErrorKind::CsvParseError => {
-                CsvParseError::new("Could not parse the csv file.").into()
+                CsvParseError::new("Could not parse the locations csv file.").into()
             }
             geocoder::ErrorKind::InitializationError => {
                 InitializationError::new("Could not initialize the KdTree.").into()
@@ -36,7 +35,6 @@ impl std::convert::From<geocoder::Error> for PyErr {
 
 #[py::class]
 struct RustReverseGeocoder {
-    path: String,
     geocoder: ReverseGeocoder,
     token: PyToken,
 }
@@ -45,9 +43,8 @@ struct RustReverseGeocoder {
 impl RustReverseGeocoder {
     #[new]
     fn __new__(obj: &PyRawObject, path: String) -> PyResult<()> {
-        let geocoder = ReverseGeocoder::new()?;
+        let geocoder = ReverseGeocoder::new(&path)?;
         obj.init(|token| RustReverseGeocoder {
-            path: path,
             geocoder: geocoder,
             token: token,
         })

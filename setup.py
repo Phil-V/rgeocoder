@@ -49,5 +49,5 @@ setup(
     setup_requires=setup_requires,
     include_package_data=True,
     zip_safe=False,
-    cmdclass=dict(test=PyTest)
+    cmdclass=dict(test=PyTest),
 )

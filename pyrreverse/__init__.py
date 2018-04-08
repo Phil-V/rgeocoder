@@ -16,14 +16,14 @@ See http://download.geonames.org/export/dump/readme.txt for more
 information on the dataset.
 """
 from __future__ import absolute_import
-
+from os.path import join, dirname
 # Guard against panic in the rust library if an absolute import of the
 # module is not possible. We want the python interpreter to handle this
 # instead.
 # As a result, from foo.pyrreverse import ReverseGeocoder will not work
 # and throw ImportError.
+from pyrreverse.exceptions import InitializationError as _
 from pyrreverse._pyrreverse import RustReverseGeocoder
-from pyrreverse.exceptions import InitializationError
 
 
 __all__ = ['ReverseGeocoder', 'InitializationError']
@@ -32,12 +32,13 @@ __all__ = ['ReverseGeocoder', 'InitializationError']
 class ReverseGeocoder(object):
     """"""
 
-    def __init__(self, lazy=True):
+    def __init__(self, path=None, lazy=True):
+        if path is not None:
+            self._path = path
+        else:
+            self._path = join(dirname(__file__), 'cities.csv')
         if not lazy:
             self._initialize()
-
-    def _initialize(self):
-        self._rust_geocoder = RustReverseGeocoder('foo')
 
     def find(self, lat, lon):
         """Find the location closest to the coordinates.
@@ -47,6 +48,9 @@ class ReverseGeocoder(object):
         result = self._geocoder.find(lat, lon)
         if result:
             return ReverseGeocoderResult(*result)
+
+    def _initialize(self):
+        self._rust_geocoder = RustReverseGeocoder(self._path)
 
     @property
     def _geocoder(self):
