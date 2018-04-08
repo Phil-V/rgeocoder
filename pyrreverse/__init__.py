@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 import sys
 from ._pyrreverse import RustReverseGeocoder
-
+from ._errors import _CsvReadError
 
 __all__ = ['ReverseGeocoder', 'InitializationError']
 
@@ -22,19 +22,14 @@ class ReverseGeocoder(object):
             self._initialize()
 
     def _initialize(self):
-        try:
-            self._rust_geocoder = RustReverseGeocoder('foo')
-        except:
-            # Hacky workaround as these exceptions are not importable
-            # and dont inherit from Exception
-            e = sys.exc_info()[0]
-            if e.__class__ == '_pyrreverse._CsvReadError':
-                raise InitializationError('Could not open the locations file.')
-            if e.__class__ == '_pyrreverse._CsvParseError':
-                raise InitializationError('Could not parse the CSV file.')
-            if e.__class__ == '_pyrreverse._InitializationError':
-                raise InitializationError('Could not initialize the kdtree.')
-            raise
+        self._rust_geocoder = RustReverseGeocoder('foo')
+        # except OSError:
+        #     raise InitializationError('Could not open the locations file.')
+        # except
+        #     raise InitializationError('Could not parse the CSV file.')
+        # if e.__class__ == '_pyrreverse._InitializationError':
+        #     raise InitializationError('Could not initialize the kdtree.')
+        # raise
 
     def find(self, lat, lon):
         """Find the location closest to the coordinates.
