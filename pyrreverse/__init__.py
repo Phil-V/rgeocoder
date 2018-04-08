@@ -23,10 +23,10 @@ from os.path import join, dirname
 # As a result, from foo.pyrreverse import ReverseGeocoder will not work
 # and throw ImportError.
 from pyrreverse.exceptions import InitializationError as _
-from pyrreverse._pyrreverse import RustReverseGeocoder
+from pyrreverse._pyrreverse import RustReverseGeocoder as _RustReverseGeocoder
 
 
-__all__ = ['ReverseGeocoder', 'InitializationError']
+__all__ = ['ReverseGeocoder', 'ReverseGeocoderResult']
 
 
 class ReverseGeocoder(object):
@@ -50,7 +50,7 @@ class ReverseGeocoder(object):
             return ReverseGeocoderResult(*result)
 
     def _initialize(self):
-        self._rust_geocoder = RustReverseGeocoder(self._path)
+        self._rust_geocoder = _RustReverseGeocoder(self._path)
 
     @property
     def _geocoder(self):
@@ -62,8 +62,7 @@ class ReverseGeocoder(object):
 
 
 class ReverseGeocoderResult(object):
-    """Reverse geocoder dataset entry.
-    """
+    """Reverse geocoder dataset entry."""
 
     def __init__(self, lat, lon, name, admin1, admin2, cc):
         #: Float of the location's latitude

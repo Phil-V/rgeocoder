@@ -3,7 +3,6 @@
 
 use kdtree::KdTree;
 use kdtree::distance::squared_euclidean;
-
 use quick_csv;
 use failure::{Backtrace, Context, Fail, ResultExt};
 use std;

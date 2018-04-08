@@ -37,27 +37,23 @@ struct RustReverseGeocoder {
 #[py::methods]
 impl RustReverseGeocoder {
     #[new]
-    fn __new__(obj: &PyRawObject, path: String) -> PyResult<()> {
-        let geocoder = ReverseGeocoder::new(&path)?;
+    fn __new__(obj: &PyRawObject, path: &str) -> PyResult<()> {
+        let geocoder = ReverseGeocoder::new(path)?;
         obj.init(|token| RustReverseGeocoder {
             geocoder: geocoder,
             token: token,
         })
     }
 
-    fn find(
-        &self,
-        lat: f64,
-        lon: f64,
-    ) -> PyResult<Option<(f64, f64, String, String, String, String)>> {
+    fn find(&self, lat: f64, lon: f64) -> PyResult<Option<(f64, f64, &str, &str, &str, &str)>> {
         if let Some(record) = self.geocoder.search(&[lat, lon]) {
             Ok(Some((
                 record.lat,
                 record.lon,
-                record.name.clone(),
-                record.admin1.clone(),
-                record.admin2.clone(),
-                record.cc.clone(),
+                &record.name,
+                &record.admin1,
+                &record.admin2,
+                &record.cc,
             )))
         } else {
             Ok(None)
