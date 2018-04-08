@@ -1,17 +1,32 @@
 # -*- coding: utf-8 -*-
+"""
+Reverse Geocoder module
+
+pyrreverse is a lightweight reverse geocoding module for Python
+implemented in Rust.
+
+Basic usage:
+   >>> from pyrreverse import ReverseGeocoder()
+   >>> rg = ReverseGeocoder()
+   >>> r = rg.find(50.844992, 4.349990)  # lat, lon
+   >>> r.name == 'Brussels' and r.cc == 'BE'
+   True
+
+See http://download.geonames.org/export/dump/readme.txt for more
+information on the dataset.
+"""
 from __future__ import absolute_import
-import sys
-from ._pyrreverse import RustReverseGeocoder
-from ._errors import _CsvReadError
+
+# Guard against panic in the rust library if an absolute import of the
+# module is not possible. We want the python interpreter to handle this
+# instead.
+# As a result, from foo.pyrreverse import ReverseGeocoder will not work
+# and throw ImportError.
+from pyrreverse._pyrreverse import RustReverseGeocoder
+from pyrreverse.exceptions import InitializationError
+
 
 __all__ = ['ReverseGeocoder', 'InitializationError']
-
-
-class GeocoderException(Exception):
-    """Base class for all the reverse geocoder module exceptions."""
-
-class InitializationError(GeocoderException):
-    """Catching this error will catch all initialization-related errors."""
 
 
 class ReverseGeocoder(object):
@@ -23,13 +38,6 @@ class ReverseGeocoder(object):
 
     def _initialize(self):
         self._rust_geocoder = RustReverseGeocoder('foo')
-        # except OSError:
-        #     raise InitializationError('Could not open the locations file.')
-        # except
-        #     raise InitializationError('Could not parse the CSV file.')
-        # if e.__class__ == '_pyrreverse._InitializationError':
-        #     raise InitializationError('Could not initialize the kdtree.')
-        # raise
 
     def find(self, lat, lon):
         """Find the location closest to the coordinates.
@@ -39,7 +47,6 @@ class ReverseGeocoder(object):
         result = self._geocoder.find(lat, lon)
         if result:
             return ReverseGeocoderResult(*result)
-        raise NotImplementedError()
 
     @property
     def _geocoder(self):
@@ -52,9 +59,6 @@ class ReverseGeocoder(object):
 
 class ReverseGeocoderResult(object):
     """Reverse geocoder dataset entry.
-
-    See http://download.geonames.org/export/dump/readme.txt for more
-    information on the dataset.
     """
 
     def __init__(self, lat, lon, name, admin1, admin2, cc):
