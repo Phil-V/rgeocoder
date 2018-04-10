@@ -14,9 +14,9 @@ use geocoder::ReverseGeocoder;
 use geocoder::ErrorKind;
 
 // Will panic if not found in sys.path.
-import_exception!(pyrreverse.exceptions, InitializationError);
-import_exception!(pyrreverse.exceptions, CsvReadError);
-import_exception!(pyrreverse.exceptions, CsvParseError);
+import_exception!(rgeocoder.exceptions, InitializationError);
+import_exception!(rgeocoder.exceptions, CsvReadError);
+import_exception!(rgeocoder.exceptions, CsvParseError);
 
 impl std::convert::From<geocoder::Error> for PyErr {
     fn from(error: geocoder::Error) -> PyErr {
@@ -61,7 +61,7 @@ impl RustReverseGeocoder {
     }
 }
 
-#[py::modinit(_pyrreverse)]
+#[py::modinit(_rgeocoder)]
 fn init_mod(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<RustReverseGeocoder>()?;
     Ok(())

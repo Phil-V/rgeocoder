@@ -2,11 +2,11 @@
 """
 Reverse Geocoder module
 
-pyrreverse is a lightweight reverse geocoding module for Python
+rgeocoder is a lightweight reverse geocoding module for Python
 implemented in Rust.
 
 Basic usage:
-   >>> from pyrreverse import ReverseGeocoder()
+   >>> from rgeocoder import ReverseGeocoder()
    >>> rg = ReverseGeocoder()
    >>> r = rg.find(50.844992, 4.349990)  # lat, lon
    >>> r.name == 'Brussels' and r.cc == 'BE'
@@ -15,17 +15,18 @@ Basic usage:
 See http://download.geonames.org/export/dump/readme.txt for more
 information on the dataset.
 """
+
 from __future__ import absolute_import
 from os.path import join, dirname
 # Guard against panic in the rust library if an absolute import of the
 # module is not possible. We want the python interpreter to handle this
 # instead.
-# As a result, from foo.pyrreverse import ReverseGeocoder will not work
+# As a result, from foo.rgeocoder import ReverseGeocoder will not work
 # and throw ImportError.
-from pyrreverse.exceptions import InitializationError as _
-from pyrreverse._pyrreverse import RustReverseGeocoder as _RustReverseGeocoder
+from rgeocoder.exceptions import InitializationError as _  # noqa: F401
+from rgeocoder._rgeocoder import RustReverseGeocoder as _RustReverseGeocoder
 
-
+__version__ = '0.1.0'
 __all__ = ['ReverseGeocoder', 'ReverseGeocoderResult']
 
 
@@ -43,7 +44,8 @@ class ReverseGeocoder(object):
     def find(self, lat, lon):
         """Find the location closest to the coordinates.
 
-        Returns a :class:`ReverseGeocoderResult` object representing a dataset entry.
+        Returns a :class:`ReverseGeocoderResult` object representing
+        a dataset entry.
         """
         result = self._geocoder.find(lat, lon)
         if result:

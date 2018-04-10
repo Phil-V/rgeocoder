@@ -147,7 +147,7 @@ mod tests {
         use std::path::PathBuf;
 
         let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        path.push("pyrreverse/cities.csv");
+        path.push("rgeocoder/cities.csv");
 
         let geocoder = ReverseGeocoder::new(path.to_str().unwrap()).unwrap();
         let y = geocoder.search(&[44.962786, -93.344722]);

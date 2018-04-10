@@ -1,0 +1,127 @@
+
+# rustup requires this 2015 or newer
+image: Visual Studio 2015
+
+environment:
+  global:
+  # TODO This is the Rust channel that build jobs will use by default but can be
+  # overridden on a case by case basis down below
+    RUST_VERSION: stable
+    TWINE_USERNAME: mckaymatt
+    TWINE_PASSWORD:
+      secure: 4EVS6uB7j1M9/KmSzc8g/DGha3tRVlC0YuL5ugK16uE=
+
+  matrix:
+    # MinGW
+    # - TARGET: i686-pc-windows-gnu
+    # - TARGET: x86_64-pc-windows-gnu
+
+    # MSVC
+    # 2.7
+    - TARGET: i686-pc-windows-msvc
+      PYTHON_DIR: "C:\\Python27"
+      WHEELPLATFORM: win32
+    - TARGET: x86_64-pc-windows-msvc
+      PYTHON_DIR: "C:\\Python27-x64"
+      WHEELPLATFORM: win_amd64
+    # 3.6
+    - TARGET: i686-pc-windows-msvc
+      PYTHON_DIR: "C:\\Python36"
+      WHEELPLATFORM: win32
+    - TARGET: x86_64-pc-windows-msvc
+      PYTHON_DIR: "C:\\Python36-x64"
+      WHEELPLATFORM: win_amd64
+    # 3.5
+    - TARGET: i686-pc-windows-msvc
+      PYTHON_DIR: "C:\\Python35"
+      WHEELPLATFORM: win32
+    - TARGET: x86_64-pc-windows-msvc
+      PYTHON_DIR: "C:\\Python35-x64"
+      WHEELPLATFORM: win_amd64
+    # 3.4
+    - TARGET: i686-pc-windows-msvc
+      PYTHON_DIR: "C:\\Python34"
+      WHEELPLATFORM: win32
+    - TARGET: x86_64-pc-windows-msvc
+      PYTHON_DIR: "C:\\Python34-x64"
+      WHEELPLATFORM: win_amd64
+
+    # Testing other channels
+    # - TARGET: x86_64-pc-windows-gnu
+    #   RUST_VERSION: nightly
+    # - TARGET: x86_64-pc-windows-msvc
+      # RUST_VERSION: nightly
+
+matrix:
+  fast_finish: true
+
+# init:
+
+install:
+  - ps: >-
+      If ($Env:TARGET -eq 'x86_64-pc-windows-gnu') {
+        $Env:PATH += ';C:\msys64\mingw64\bin'
+      } ElseIf ($Env:TARGET -eq 'i686-pc-windows-gnu') {
+        $Env:PATH += ';C:\msys64\mingw32\bin'
+      }
+  - curl -sSf -o rustup-init.exe https://win.rustup.rs/
+  - rustup-init.exe -y --default-host %TARGET% --default-toolchain %RUST_VERSION%
+  - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
+  - rustc -Vv
+  - cargo -V
+  - "%PYTHON_DIR%\\python.exe -m pip install -U pip>=9.0.1"
+  #  without updating wheel and setuptools, ruamel.yaml will fail on python 3.4
+  - "%PYTHON_DIR%\\python.exe -m pip install -U wheel setuptools"
+  - "%PYTHON_DIR%\\python.exe -m pip install -U urllib3[secure] scikit-ci==0.14.0"
+  - "%PYTHON_DIR%\\python.exe -m ci install"
+
+build_script:
+  - "%PYTHON_DIR%\\python.exe -m ci build"
+
+test_script:
+  - "%PYTHON_DIR%\\python.exe -m ci test"
+  - ps: >-
+      Get-ChildItem .\dist\
+
+artifacts:
+  - path:  '**\*.whl'
+    type: File
+    name: rgeocoder
+
+before_deploy:
+  # appveyor deploy is flaky for wheels
+  # upload to pypi with twine when there is a new tag
+  - cmd: if %APPVEYOR_REPO_TAG% equ true (%PYTHON_DIR%\\python -m ci after_test)
+
+deploy:
+  - provider: GitHub
+    # TODO update `auth_token.secure`
+    # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
+    # - Encrypt it. Go to https://ci.appveyor.com/tools/encrypt
+    # - Paste the output down here
+    auth_token:
+      secure: Z4WsdThBV6yomQH4V2M/T5/q1khChRPklJ+xDILxO34QGwcbqH2H0wlWvX+B+B89
+    description: "rgeocoder"
+    on:
+      # TODO Here you can pick which targets will generate binary releases
+      # In this example, there are some targets that are tested using the stable
+      # and nightly channels. This condition makes sure there is only one release
+      # for such targets and that's generated using the stable channel
+      appveyor_repo_tag: true
+
+cache:
+  - C:\Users\appveyor\.rustup
+
+branches:
+  only:
+    # Release tags
+    - /^v\d+\.\d+\.\d+.*$/
+    - master
+
+notifications:
+  - provider: Email
+    to:
+      - philippe@arcadian.be
+    on_build_success: false
+    on_build_failure: false
+    on_build_status_changed: false

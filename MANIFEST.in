@@ -1,7 +1,11 @@
-include README.md
+include CONTRIBUTING.rst
+include HISTORY.rst
+include LICENSE
+include README.rst
+include cities.csv
 
-recursive-include * cities.csv
 recursive-include tests *.py
+recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif
 
 # we only want "release" artifacts, not "debug" artifacts
 # update this path if you move the rust folder

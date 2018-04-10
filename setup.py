@@ -1,53 +1,65 @@
-import sys
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-from setuptools import setup
-from setuptools.command.test import test as TestCommand
-
+from setuptools import setup, Distribution
 try:
-    from setuptools_rust import RustExtension
+    from setuptools_rust import RustExtension, Binding
 except ImportError:
     import subprocess
-    errno = subprocess.call([sys.executable, '-m', 'pip', 'install', 'setuptools-rust'])
-    if errno:
-        print("Please install setuptools-rust package")
-        raise SystemExit(errno)
-    else:
-        from setuptools_rust import RustExtension
+    print("\nsetuptools_rust is required before install - https://pypi.python.org/pypi/setuptools-rust")
+    print("attempting to install with pip...")
+    print(subprocess.check_output(["pip", "install", "setuptools_rust"]))
+    from setuptools_rust import RustExtension, Binding
 
+with open('README.rst') as readme_file:
+    readme = readme_file.read()
 
-class PyTest(TestCommand):
-    user_options = []
+with open('HISTORY.rst') as history_file:
+    history = history_file.read()
 
-    def run(self):
-        self.run_command("test_rust")
+requirements = []
 
-        import subprocess
-        import sys
-        errno = subprocess.call([sys.executable, '-m', 'pytest', 'tests'])
-        raise SystemExit(errno)
-
-setup_requires = ['setuptools-rust>=0.6.0']
-install_requires = []
-tests_require = install_requires + ['pytest', 'pytest-benchmark']
+test_requirements = [
+    'pytest>=2.9.2',
+    'pytest-runner>=2.0'
+]
 
 setup(
-    name='pyrreverse',
+    name='rgeocoder',
     version='0.1.0',
-    classifiers=[
-        'License :: OSI Approved :: MIT License',
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
-        'Programming Language :: Python',
-        'Programming Language :: Rust',
-        'Operating System :: POSIX',
-        'Operating System :: MacOS :: MacOS X',
+    description="A lightweight offline reverse geocoder implemented in Rust.",
+    long_description=readme + '\n\n' + history,
+    author="Phil V.",
+    author_email='philippe@arcadian.be',
+    url='https://github.com/Phil-V/rgeocoder',
+    packages=[
+        'rgeocoder',
     ],
-    packages=['pyrreverse'],
-    rust_extensions=[RustExtension('pyrreverse._pyrreverse', 'Cargo.toml')],
-    install_requires=install_requires,
-    tests_require=tests_require,
-    setup_requires=setup_requires,
+    package_dir={'rgeocoder':
+                 'rgeocoder'},
     include_package_data=True,
+    install_requires=requirements,
+    license="MIT license",
     zip_safe=False,
-    cmdclass=dict(test=PyTest),
+    rust_extensions=[
+        RustExtension('rgeocoder._rgeocoder', 'rgeocoder/rust/Cargo.toml',
+                       debug=False, binding=Binding.PyO3)],
+    keywords='rgeocoder',
+    classifiers=[
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
+        "Programming Language :: Python :: 2",
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+    ],
+    test_suite='tests',
+    tests_require=test_requirements,
+    setup_requires=['setuptools_rust',
+    'pytest-runner>=2.0',
+    ]
 )

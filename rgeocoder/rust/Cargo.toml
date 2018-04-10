@@ -1,10 +1,11 @@
 [package]
-name = "pyrreverse"
+name = "rgeocoder"
 version = "0.1.0"
-authors = ["Philippe V. <philippe@arcadian.be>"]
+authors = ["Phil V. <philippe@arcadian.be>"]
 
 [lib]
-name = "pyrreverse"
+# crate-type = ["dylib"]
+name = "rgeocoder"
 crate-type = ["cdylib"]
 
 [dependencies]
@@ -15,4 +16,3 @@ failure = "0.1.1"
 
 [dependencies.pyo3]
 version = "0.2.6"
-# features = ["extension-module"]

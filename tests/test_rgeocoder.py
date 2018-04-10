@@ -1,14 +1,23 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
 
+"""
+test_rgeocoder
+----------------------------------
+
+Tests for `rgeocoder` module.
+"""
+
+from __future__ import absolute_import, unicode_literals
 import pytest
-import pyrreverse
-import pyrreverse.exceptions
+import rgeocoder
+import rgeocoder.exceptions
 
 
 @pytest.fixture(scope="module")
 def geocoder():
-    return pyrreverse.ReverseGeocoder()
+    return rgeocoder.ReverseGeocoder()
+
 
 @pytest.fixture()
 def invalid_csv(tmpdir_factory):
@@ -19,6 +28,7 @@ def invalid_csv(tmpdir_factory):
     )
     return csv
 
+
 @pytest.fixture()
 def empty_csv(tmpdir_factory):
     """csv file with no rows"""
@@ -28,6 +38,7 @@ def empty_csv(tmpdir_factory):
     )
     return csv
 
+
 def test_can_reverse_geocode(geocoder):
     result = geocoder.find(43.25338, 2.17808)
     assert result.name == 'Alzonne'
@@ -36,8 +47,9 @@ def test_can_reverse_geocode(geocoder):
     result = geocoder.find(-6.16394, 39.19793)
     assert result.name == 'Zanzibar'
 
+
 def test_result(geocoder):
-    result = geocoder.find(12.42167,42.89556)
+    result = geocoder.find(12.42167, 42.89556)
     assert result.name == 'Alaili Dadda`'
     assert result.admin1 == 'Obock'
     assert result.admin2 == ''
@@ -46,18 +58,22 @@ def test_result(geocoder):
     assert result.lon == 42.89556
     assert result.__repr__() == '<ReverseGeocoderResult [12.4217, 42.8956]>'
 
+
 def test_wrong_type(geocoder):
     with pytest.raises(TypeError):
         geocoder.find('foo', 'bar')
 
+
 def test_cant_open_file():
-    with pytest.raises(pyrreverse.exceptions.CsvReadError):
-        pyrreverse.ReverseGeocoder(path='foo.csv', lazy=False)
+    with pytest.raises(rgeocoder.exceptions.CsvReadError):
+        rgeocoder.ReverseGeocoder(path='foo.csv', lazy=False)
+
 
 def test_cant_parse_file(invalid_csv):
-    with pytest.raises(pyrreverse.exceptions.CsvParseError):
-        pyrreverse.ReverseGeocoder(path=str(invalid_csv), lazy=False)
+    with pytest.raises(rgeocoder.exceptions.CsvParseError):
+        rgeocoder.ReverseGeocoder(path=str(invalid_csv), lazy=False)
+
 
 def test_empty_csv(empty_csv):
-    rg = pyrreverse.ReverseGeocoder(path=str(empty_csv), lazy=False)
+    rg = rgeocoder.ReverseGeocoder(path=str(empty_csv))
     assert rg.find(43.25338, 2.17808) is None
