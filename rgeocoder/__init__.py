@@ -6,7 +6,7 @@ rgeocoder is a lightweight reverse geocoding module for Python
 implemented in Rust.
 
 Basic usage:
-   >>> from rgeocoder import ReverseGeocoder()
+   >>> from rgeocoder import ReverseGeocoder
    >>> rg = ReverseGeocoder()
    >>> r = rg.find(50.844992, 4.349990)  # lat, lon
    >>> r.name == 'Brussels' and r.cc == 'BE'

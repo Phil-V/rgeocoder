@@ -1,7 +1,5 @@
-=========
-rgeocoder
-=========
-
+RGeocoder: a reverse geocoding module for Python
+================================================
 
 .. image:: https://img.shields.io/pypi/v/rgeocoder.svg
         :target: https://pypi.python.org/pypi/rgeocoder
@@ -9,51 +7,56 @@ rgeocoder
 .. image:: https://img.shields.io/travis/Phil-V/rgeocoder.svg
         :target: https://travis-ci.org/Phil-V/rgeocoder
 
-.. image:: https://readthedocs.org/projects/rgeocoder/badge/?version=latest
-        :target: https://rgeocoder.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
 .. image:: https://pyup.io/repos/github/Phil-V/rgeocoder/shield.svg
      :target: https://pyup.io/repos/github/Phil-V/rgeocoder/
      :alt: Updates
 
+A lightweight offline reverse geocoder implemented in Rust with
+[pyo3](https://github.com/PyO3/pyo3) python bindings.
 
-A lightweight offline reverse geocoder implemented in Rust with python bindings.
-
-Based on (https://github.com/llambda/rust-reverse-geocoder, itself inspired by
-https://github.com/thampiman/reverse-geocoder).
+Based on [llambda/rust-reverse-geocoder](https://github.com/llambda/rust-reverse-geocoder) and
+[thampiman/reverse-geocoder](https://github.com/thampiman/reverse-geocoder).
 
 
 Basic usage
 -----------
 
+```sh
+pip install rgeocoder
+```
 
-# Python bindings to the Rust Reverse Geocoder
+```py
+>>> from rgeocoder import ReverseGeocoder
+>>> rg = ReverseGeocoder()
+>>> r = rg.find(41.891929,12.511331)  # lat, lon
+>>> print(r.name, r.cc)
+'Rome IT'
+>>> print(r.lat, r.lon)
+41.89193 12.51133
+```
 
-A fast, offline reverse geocoder written in Rust
-(https://github.com/llambda/rust-reverse-geocoder, itself inspired by
-https://github.com/thampiman/reverse-geocoder), importable as a python module.
+Some locations include the first-
+and second-level administrative divisions:
+```py
+>>> print(r.admin1)
+'Latium'
+>>> print(r.admin2)
+'Citta metropolitana di Roma Capitale'
+```
 
-# Build
-
-python ./setup.py bdist_wheel
-
-# Tests
-
-python ./setup.py develop
-python ./setup.py test
-
-# Usage
-
-TBD!
+See http://download.geonames.org/export/dump/readme.txt for more
+information on the dataset.
 
 
+License
+-------
+
+[MIT License](LICENSE)
 
 
 Credits
----------
+-------
 
-This package was created with Cookiecutter_ and the `mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish`: https://github.com/mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish
+This package was created with
+[audreyr/cookiecutter](https://github.com/audreyr/cookiecutter)
+ and the [mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish](mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish) project template.
