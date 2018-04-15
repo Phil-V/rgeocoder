@@ -11,7 +11,7 @@ except ImportError:
     print(subprocess.check_output(["pip", "install", "setuptools_rust"]))
     from setuptools_rust import RustExtension, Binding
 
-with open('README.rst') as readme_file:
+with open('README.md') as readme_file:
     readme = readme_file.read()
 
 with open('HISTORY.rst') as history_file:
