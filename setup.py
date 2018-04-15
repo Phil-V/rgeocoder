@@ -38,6 +38,7 @@ setup(
     package_dir={'rgeocoder':
                  'rgeocoder'},
     include_package_data=True,
+    package_data={'rgeocoder': ['cities.csv']},
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,

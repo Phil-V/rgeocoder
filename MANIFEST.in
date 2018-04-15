@@ -2,7 +2,6 @@ include CONTRIBUTING.rst
 include HISTORY.rst
 include LICENSE
 include README.rst
-include cities.csv
 
 recursive-include tests *.py
 recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif
@@ -11,6 +10,8 @@ recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif
 # update this path if you move the rust folder
 recursive-include */rust/target/release *.so *.dylib *.dll *.lib
 # also don't end the path with a "/"
+
+recursive-include * cities.csv
 
 recursive-include * *.h
 
