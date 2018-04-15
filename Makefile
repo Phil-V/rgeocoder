@@ -1,4 +1,4 @@
-.PHONY: clean clean-test clean-pyc clean-build clean-venv docs help install dist test test-all 
+.PHONY: clean clean-test clean-pyc clean-build clean-venv docs help install dist test test-all
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
@@ -30,13 +30,12 @@ help:
 
 clean: clean-build clean-pyc clean-test clean-venv ## remove all build, test, coverage, Python artifacts and virtualenv
 
-
 clean-build: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/
 	rm -fr rgeocoder/rust/target
 	rm -fr .eggs/
-	rm -f *.so *.dylib *.dll 
+	rm -f *.so *.dylib *.dll
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -fr {} +
 
@@ -66,13 +65,12 @@ venv:  ## set up a virtualenv that will by python and install dependencies
 	python -m virtualenv venv || python -m venv venv
 	venv/bin/python -m pip install -r requirements_dev.txt
 
-
 test-all: venv ## run tests on every Python version with tox
 	venv/bin/tox
 
 coverage: venv ## check code coverage quickly with the default Python
 	venv/bin/python -m coverage run --source rgeocoder -m pytest
-	
+
 		venv/bin/python -m coverage report -m
 		venv/bin/python -m coverage html
 		$(BROWSER) htmlcov/index.html
@@ -88,7 +86,7 @@ docs: venv ## generate Sphinx HTML documentation, including API docs
 servedocs: venv docs ## compile the docs watching for changes
 	venv/bin/python -m watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
-dist: venv clean ## builds source and wheel package
+dist: clean venv ## builds source and wheel package
 	venv/bin/python setup.py sdist
 	venv/bin/python setup.py build_ext
 	venv/bin/python setup.py bdist_wheel
@@ -98,5 +96,4 @@ install: venv clean ## install the package to the active Python's site-packages
 	venv/bin/python setup.py build_ext
 	venv/bin/python setup.py install
 
-
-local-test: clean test coverage dist install 
+local-test: clean test coverage dist install

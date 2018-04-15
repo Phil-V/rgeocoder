@@ -18,17 +18,15 @@ rgeocoder
      :alt: Updates
 
 
-A lightweight offline reverse geocoder implemented in Rust.
+A lightweight offline reverse geocoder implemented in Rust with python bindings.
+
+Based on (https://github.com/llambda/rust-reverse-geocoder, itself inspired by
+https://github.com/thampiman/reverse-geocoder).
 
 
-* Free software: MIT license
-* Documentation: https://rgeocoder.readthedocs.io.
+Basic usage
+-----------
 
-
-Features
---------
-
-* TODO
 
 # Python bindings to the Rust Reverse Geocoder
 

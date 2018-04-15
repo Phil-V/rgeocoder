@@ -28,7 +28,7 @@ function manylinux_build_test_and_bundle() {
     rm -rf /opt/python/cp26*
     # rm -rf /opt/python/cp27*  # uncludes m and mu
     rm -rf /opt/python/cp33*
-    # rm -rf /opt/python/cp34*
+    rm -rf /opt/python/cp34*
     # rm -rf /opt/python/cp35*
     # rm -rf /opt/python/cp36*
 
