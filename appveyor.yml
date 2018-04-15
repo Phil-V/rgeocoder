@@ -7,9 +7,9 @@ environment:
   # TODO This is the Rust channel that build jobs will use by default but can be
   # overridden on a case by case basis down below
     RUST_VERSION: stable
-    TWINE_USERNAME: mckaymatt
+    TWINE_USERNAME: Phil-V
     TWINE_PASSWORD:
-      secure: 4EVS6uB7j1M9/KmSzc8g/DGha3tRVlC0YuL5ugK16uE=
+      secure: foo
 
   matrix:
     # MinGW

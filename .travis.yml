@@ -12,7 +12,7 @@ env:
     # TODO Update this to match the name of your project.
     - CRATE_NAME: rgeocoder
     # Rust release. E.g. Stable, nightly, nightly-2014-12-18
-    - RUSTRELEASE: stable
+    - RUSTRELEASE: 1.26.0-nightly
     - RUSTCOMPILER: RUSTUP
     - TWINE_USERNAME: Phil-V
     - secure: Q94OKGYoeYE7HV8xTAwjf0qxw72+6hI14wAMhMfALkpWgtsWVyUdIJPTWm5s1WJrWdeZmSNK1oQjALBLV9yD1DNZgHw8lC/nTI2qY7ywpRUmrVHfeSy5YKbzeIeHC1gNLWQhq1Mc9vF7x2LWE2pI/6NuDP5uRx0NrnKw64z0P/kDGDKPDQ8kgOq8kayTSzaibMk4iNxv2h91PnWelYiKo0OluRahEYzyvl29NilmVgfJ3jpcC78nuJe4622vfVBhmGps3bZHC8D+7qSvU6TiFe/S+fXLdebe/SCujwUhSOSgsvl4YzLvUe2FFftOG5NJRwJa6EqkQRZ+1JmVO2OA5g3Mg93Tb+aDT/j597YQJYz5hDpuQTLjvsQEjbtSlDZoaNo5OeXkiutflgGXNj7NvOGNYfEvGeNb1dqsbEQyIG6aBFZy4yMWgXILjTZmH0tYpsshGPFL+yIH5aXGsbIt918F9tazy1IuSPcwcmaL1tEhsM5ETn4n1P7X1jY9yHCsg5i8RYWhF6SsHn0L/UTg2+y4nJ3odWtlXzf9BWAo1c/frhC7BJDea09vgplfeIERYuQIGDcZP5LhGkxE+gZc8MEAj9UvryjOuv/znO+1irSRV4xi4H9Yvsy/tbpWnM3Qedy9ekt1PpMgolHNoKXKh2PKPp4uJc/c12LtNNU4x7s=
@@ -20,18 +20,18 @@ env:
 matrix:
   include:
     # TARGET is the rust target triplet
-    # WHEELPLATFORM - is the wheel platform target that is passed in as 
+    # WHEELPLATFORM - is the wheel platform target that is passed in as
     #                 python setup.py bdist_wheel --plat-name=<WHEELPLATFORM>
     #                 E.g. "macosx_10_11_x86_64", "win_amd64", "manylinux1_x86_64"
-    #                 Using "manylinux1_i686" or "manylinux1_x86_64" will initiate a 
+    #                 Using "manylinux1_i686" or "manylinux1_x86_64" will initiate a
     #                 special "manylinux build"
 
 
-    # PYENV - single version, or comma seperated list of versions to build against 
-    #         Not relevent if using "manylinux" because python is already installed in 
+    # PYENV - single version, or comma seperated list of versions to build against
+    #         Not relevent if using "manylinux" because python is already installed in
     #         the manylinux docker container and those are used instead
 
-    # RUSTCOMPILER - which build tools do we intall for rust. options are RUSTUP or CROSS. 
+    # RUSTCOMPILER - which build tools do we intall for rust. options are RUSTUP or CROSS.
     #                This option is ignored when building a manylinux wheel
     #                Also, at this time you would have to integrate Cross yourself.
 
@@ -86,7 +86,7 @@ deploy:
 # After you create the Github repo and add it to Travis, run the
 # travis_pypi_setup.py script to finish PyPI deployment setup
 
-# this is for pypi. Will fail if you haven't run 
+# this is for pypi. Will fail if you haven't run
 #    "python -m twine register ... " to register with pypi
  - provider: script
    script: ci/pypi_upload.sh
@@ -108,9 +108,9 @@ deploy:
      # In this example, there are some targets that are tested using the stable
      # and nightly channels. This condition makes sure there is only one release
      # for such targets and that's generated using the stable channel
-     condition: $TRAVIS_RUST_VERSION = stable
+     condition: $TRAVIS_RUST_VERSION = 1.26.0-nightly
      tags: true
- 
+
 before_cache:
   # Travis can't cache files that are not readable by "others"
   - chmod -R a+r $HOME/.cache/pip
