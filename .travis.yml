@@ -2,6 +2,8 @@
 # https://github.com/japaric/trust/tree/v0.1.1
 dist: trusty
 language: rust
+rust:
+  - nightly
 services: docker
 sudo: required
 # Config file for automatic testing at travis-ci.org
@@ -9,13 +11,10 @@ sudo: required
 
 env:
   global:
-    # TODO Update this to match the name of your project.
     - CRATE_NAME: rgeocoder
     # Rust release. E.g. Stable, nightly, nightly-2014-12-18
-    - RUSTRELEASE: 1.26.0-nightly
+    - RUSTRELEASE: nightly
     - RUSTCOMPILER: RUSTUP
-    - TWINE_USERNAME: Phil-V
-    - secure: Q94OKGYoeYE7HV8xTAwjf0qxw72+6hI14wAMhMfALkpWgtsWVyUdIJPTWm5s1WJrWdeZmSNK1oQjALBLV9yD1DNZgHw8lC/nTI2qY7ywpRUmrVHfeSy5YKbzeIeHC1gNLWQhq1Mc9vF7x2LWE2pI/6NuDP5uRx0NrnKw64z0P/kDGDKPDQ8kgOq8kayTSzaibMk4iNxv2h91PnWelYiKo0OluRahEYzyvl29NilmVgfJ3jpcC78nuJe4622vfVBhmGps3bZHC8D+7qSvU6TiFe/S+fXLdebe/SCujwUhSOSgsvl4YzLvUe2FFftOG5NJRwJa6EqkQRZ+1JmVO2OA5g3Mg93Tb+aDT/j597YQJYz5hDpuQTLjvsQEjbtSlDZoaNo5OeXkiutflgGXNj7NvOGNYfEvGeNb1dqsbEQyIG6aBFZy4yMWgXILjTZmH0tYpsshGPFL+yIH5aXGsbIt918F9tazy1IuSPcwcmaL1tEhsM5ETn4n1P7X1jY9yHCsg5i8RYWhF6SsHn0L/UTg2+y4nJ3odWtlXzf9BWAo1c/frhC7BJDea09vgplfeIERYuQIGDcZP5LhGkxE+gZc8MEAj9UvryjOuv/znO+1irSRV4xi4H9Yvsy/tbpWnM3Qedy9ekt1PpMgolHNoKXKh2PKPp4uJc/c12LtNNU4x7s=
 
 matrix:
   include:
@@ -51,8 +50,8 @@ matrix:
     # we build/test against all of them at the same time. I have it set up to run against
     # cp27-cp27m, cp27-cp27mu, cp33-cp33m, cp34-cp34m, cp35-cp35m, cp36-cp36m
     # PYENV versions isn't relevent here so just keep it at 3.6.1
-    - env: TARGET=i686-unknown-linux-gnu PYENV=3.6.1 WHEELPLATFORM=manylinux1_i686
-    - env: TARGET=x86_64-unknown-linux-gnu PYENV=3.6.1 WHEELPLATFORM=manylinux1_x86_64
+    - env: TARGET=i686-unknown-linux-gnu PYENV=3.6.5 WHEELPLATFORM=manylinux1_i686
+    - env: TARGET=x86_64-unknown-linux-gnu PYENV=3.6.5 WHEELPLATFORM=manylinux1_x86_64
 
     #  Note that musl isn't covered by manylinux and I had trouble building
     #  dylibs with it as well
@@ -65,10 +64,10 @@ matrix:
     # See versions https://docs.travis-ci.com/user/osx-ci-environment/#OS-X-Version
     # current default is osx_image: xcode7.3 OS X 10.11
     # xcode6.4 seems to segfault with rustup or cross
-    - env: TARGET=x86_64-apple-darwin PYENV='3.6.1,3.5.3,3.4.6,2.7.13' WHEELPLATFORM=macosx_10_11_x86_64
+    - env: TARGET=x86_64-apple-darwin PYENV='3.6.5,3.5.5,2.7.14' WHEELPLATFORM=macosx_10_11_x86_64
       os: osx
       osx_image: xcode7.3
-    - env: TARGET=x86_64-apple-darwin PYENV='3.6.1,3.5.3,3.4.6,2.7.13' WHEELPLATFORM=macosx_10_12_x86_64
+    - env: TARGET=x86_64-apple-darwin PYENV='3.6.5,3.5.5,2.7.14' WHEELPLATFORM=macosx_10_12_x86_64
       os: osx
       osx_image: xcode8.1
 
@@ -83,33 +82,14 @@ script:
   - bash ci/script.sh
 
 deploy:
-# After you create the Github repo and add it to Travis, run the
-# travis_pypi_setup.py script to finish PyPI deployment setup
-
-# this is for pypi. Will fail if you haven't run
-#    "python -m twine register ... " to register with pypi
- - provider: script
-   script: ci/pypi_upload.sh
-   skip_cleanup: true
-   on:
-     tags: true
- - provider: releases
-   # TODO update `api_key.secure`
-   # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
-   # - Encrypt it: `travis encrypt 0123456789012345678901234567890123456789
-   # - Paste the output down here
-   api_key:
-     secure: "Wfy2/s+LddUBK4TfKcrXVLJO8TQQEY+ZMYKjwOGnjjHdM0FzcHfKauLr2by10o1qKzV+KpsJov/HZdlAK8jfOvzrMPLQWzjhEp8yxSFhyfy1gCEdPZY1rNCpVM9S/JYIl4QHpzr+fQq67ZHn9Qx72ImsRUweq77aqNL9vRlWRsCr4bQwvLG6cka3NJ5yf8m4xdQ/X9pdxGePryxpzah+KKvpXgHjJ+hAa0ckVE7OAYz5fhu3ceaGbU1Dw3g2Tzthcd2BpDN+tZf9CDqKfCvQ7AdVWzB/lcl21COZ+p8NepPjcg+OF8Nt4ez6aMTutlpECJPf0i2zhiLK8bljol6NYUjRJTobnUV8EQaBxDha447ExrmtGKscKjh0u7ys7ARZqztUvDj6CHOz14hEoI7duBN094x9KihPOoWSMmZ2hFIDUaLa9AcQWZjhAFChFDa95hhxs3kLx80Azx6uwEJ6ETA/ZlNrW9FFnCwrWL/k9QhT1UvtuHgRhZV8snp0pAdgQ8HCgyWAr1c1KNJ9AuXs1My9kVjcbXcglCmRp0JLDo0MA8iALfkOvLpdkK6viFq29Lp7WgPpSNRUGB70DBFUzMTim/GkeOrpCc6TcN+vKN7/XVG/OkmB/XA1+S1lOEtzJZlZaqms9Pi1L75deu08pK62SBzsxjSGdjwMwtToT2k="
-   file_glob: true
-   file: wheelhouse/rgeocoder*.whl
-   skip_cleanup: true
-   on:
-     # TODO Here you can pick which targets will generate binary releases
-     # In this example, there are some targets that are tested using the stable
-     # and nightly channels. This condition makes sure there is only one release
-     # for such targets and that's generated using the stable channel
-     condition: $TRAVIS_RUST_VERSION = 1.26.0-nightly
-     tags: true
+  provider: pypi
+  user: Phil-V
+  password:
+    secure:  eMqFka11381ugLR58QTH9LDMqZxIHhTGDob21fCrPrgt3HAq+cH99nvvzGnXsmXFZiOVOGHK/YeWQX3owSDPQVInriOI9P6nMgsySrekrr6z/wmCS7YtoagaKkBtKdYhHrmtaAIhzR9vMC/DoyG/ZCWzPhWfKtWkP4Qj7qvFxu7//yx0hMHVGfQTK3U3QfEP99xCR+MQcOT9NiBAfFaakSVrvDuE0EPPwN4I9QX3za9yfMuMYyXwZiC+IfnTuFZxqB6Cak9Wul26HFYW1GssRKFFAk3pH0uR2rMDCvuqtiRl2bdwzPsOVMwOKSFi2mf82tViKoew+A1tlu/XHA8CIqERNkOTREcBHta12hwggdg9O3dVLMs+KawBqadEN56XRatoM25s1UfcUL4PuhwaRPZkqpZrV5Vxwte6NiJV4d7KIXqWVsq3sBlP5w5GVR1KXEnmC1xjKCVIWSnz0FvUwkPswbIlknWEwmU6cXORABTlERU792MpJxg7YQoKoK6Ehn+8i9Fc8AFjkBOv8eb9SloLeaAaS7/QmSsVLja7vZkDLQ/AN5BWqnnDSrIHRfckWr4ySO+8yh9zPw3zjXnGIeZeP9yiXzJzPvfmzh9SQYcNeLqsWjD7h8VFPVxMRREbvI8ZVXc7AfC9wXlxzTky2rRtNvariKOoeohIaWRxiJE=
+  # on:
+  #   tags: true
+  server: https://test.pypi.org/legacy/
+  distributions: "sdist bdist_wheel"
 
 before_cache:
   # Travis can't cache files that are not readable by "others"

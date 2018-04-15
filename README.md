@@ -59,4 +59,4 @@ Credits
 
 This package was created with
 [audreyr/cookiecutter](https://github.com/audreyr/cookiecutter)
- and the [mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish](mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish) project template.
+ and the [mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish](https://github.com/mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish) project template.

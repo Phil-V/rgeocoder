@@ -23,25 +23,25 @@ function pyenv_install() {
 
     # make venvs for each version we want to test
     rm -rf /tmp/.venv /tmp/pyenv_versions
-    
+
     IFS="," # allows iterating over csv string
     for CURRENT_PYENV in $PYENV; do
         echo "$CURRENT_PYENV" >> /tmp/pyenv_versions
     done
     # try and speed this up by installing in parallel
-    cat  /tmp/pyenv_versions | xargs -L 1 -P 10 pyenv install --skip-existing 
+    cat  /tmp/pyenv_versions | xargs -L 1 -P 10 pyenv install --skip-existing
 
     for CURRENT_PYENV in $PYENV; do
         pyenv global $CURRENT_PYENV
 
         pyenv rehash
         python --version
-        pip install -q -U pip 
+        pip install -q -U pip
         pip install -q -U virtualenv
         python -m venv "/tmp/.venv/${CURRENT_PYENV}" || python -m virtualenv "/tmp/.venv/${CURRENT_PYENV}"
         set +x
         source /tmp/.venv/${CURRENT_PYENV}/bin/activate
-        pip install -q -U pip 
+        pip install -q -U pip
         deactivate
         set -x
 
@@ -50,11 +50,11 @@ function pyenv_install() {
 
 
 if [[ $WHEELPLATFORM == *"manylinux"* ]]; then
-    echo "skipping pyenv install" 
+    echo "skipping pyenv install"
 else
-    if [ -z ${PYENV+x} ]; then 
+    if [ -z ${PYENV+x} ]; then
         # This is for local testing. You can change the default to match your system.
-        export PYENV='3.6.1'
+        export PYENV='3.6.5'
         echo "PYENV is not set. Defaulting to python $PYENV."
         if [ ! -z ${TRAVIS_BUILD_NUMBER+x} ]; then
             # should not see TRAVIS_BUILD_NUMBER if this is local testing.
@@ -65,5 +65,5 @@ else
         echo "PYENV is $PYENV"
     fi
 
-    pyenv_install 
+    pyenv_install
 fi
