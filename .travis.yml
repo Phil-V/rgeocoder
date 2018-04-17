@@ -15,6 +15,8 @@ env:
     # Rust release. E.g. Stable, nightly, nightly-2014-12-18
     - RUSTRELEASE: nightly
     - RUSTCOMPILER: RUSTUP
+    - TWINE_USERNAME: Phil-V
+    - secure: KeeCV2aEV6O93nwKNIIqR5DNmZhhdc0KF8cN1Gy4HmYIHKMKHH6JvQPnK5WlOxlac9l2nc9i+BCtBB4aC/KcaVfDtmFCXerjqcmQxE6FCfTdOcd8p9RoTdHrBE2XHCr7n8c/9RL4+gLlzlVGjVXrYC0zUVVxvNmwu04iNoye7Cg/5SecUA6j7buK11zIMwRRu+q/2JtxMd/vlp20yMk6ZAq4DpG9c8lGFYVLByLS5wTu09SHY0lC1Bb4JLNbwow+PDBBhINatrLoBgHEksOcIwm9pt6oYUQwL5Y21BIF/oJlMiaWaPV0WJijsO2eYgzqC+qt5bdhpRp3uxY2sk3FzS+Bk0TxzJwlH16PNsC/nSjsOJefUPGQ/1O76qx97fVhmStVOevYxEVXMMNg3/7tZcpLdItfZD/zgz0UafbbroKnq1Xrle9pyjd0pK0uNeTFODDcVrst+HlsdAPQ41RwSuAYpGKTbHfcbyYIwLdptggxCO5itMXFQaParqe4p+6PURoXXPlC6KeAk3B7AAmlyPVNuL5Wt3FqGlabzLCsFV7RXak/QUMhEk4uaNNp043L20/v+CNKW2BTfNSgJZuabnRThLVBPzzTR5M4D36G/KOtuTrbeApHhclS3tncSf5ZLekGZ6Y0eEW9NhhZ/RiNEMYxk9+HsDDe/2vun6GQpEY=
 
 matrix:
   include:
@@ -64,16 +66,17 @@ matrix:
     # See versions https://docs.travis-ci.com/user/osx-ci-environment/#OS-X-Version
     # current default is osx_image: xcode7.3 OS X 10.11
     # xcode6.4 seems to segfault with rustup or cross
-    - env: TARGET=x86_64-apple-darwin PYENV='3.6.5,3.5.5,2.7.14' WHEELPLATFORM=macosx_10_11_x86_64
-      os: osx
-      osx_image: xcode7.3
+    # - env: TARGET=x86_64-apple-darwin PYENV='3.6.5,3.5.5,2.7.14' WHEELPLATFORM=macosx_10_11_x86_64
+    #   os: osx
+    #   osx_image: xcode7.3
     - env: TARGET=x86_64-apple-darwin PYENV='3.6.5,3.5.5,2.7.14' WHEELPLATFORM=macosx_10_12_x86_64
       os: osx
-      osx_image: xcode8.1
+      osx_image: xcode8.3
 
 before_install: set -e
 
 install:
+  - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install python-virtualenv python-pip; fi
   - bash ci/pyinstall.sh
   - bash ci/install.sh
   - source ~/.cargo/env || true
@@ -82,14 +85,11 @@ script:
   - bash ci/script.sh
 
 deploy:
-  provider: pypi
-  user: Phil-V
-  password:
-    secure:  eMqFka11381ugLR58QTH9LDMqZxIHhTGDob21fCrPrgt3HAq+cH99nvvzGnXsmXFZiOVOGHK/YeWQX3owSDPQVInriOI9P6nMgsySrekrr6z/wmCS7YtoagaKkBtKdYhHrmtaAIhzR9vMC/DoyG/ZCWzPhWfKtWkP4Qj7qvFxu7//yx0hMHVGfQTK3U3QfEP99xCR+MQcOT9NiBAfFaakSVrvDuE0EPPwN4I9QX3za9yfMuMYyXwZiC+IfnTuFZxqB6Cak9Wul26HFYW1GssRKFFAk3pH0uR2rMDCvuqtiRl2bdwzPsOVMwOKSFi2mf82tViKoew+A1tlu/XHA8CIqERNkOTREcBHta12hwggdg9O3dVLMs+KawBqadEN56XRatoM25s1UfcUL4PuhwaRPZkqpZrV5Vxwte6NiJV4d7KIXqWVsq3sBlP5w5GVR1KXEnmC1xjKCVIWSnz0FvUwkPswbIlknWEwmU6cXORABTlERU792MpJxg7YQoKoK6Ehn+8i9Fc8AFjkBOv8eb9SloLeaAaS7/QmSsVLja7vZkDLQ/AN5BWqnnDSrIHRfckWr4ySO+8yh9zPw3zjXnGIeZeP9yiXzJzPvfmzh9SQYcNeLqsWjD7h8VFPVxMRREbvI8ZVXc7AfC9wXlxzTky2rRtNvariKOoeohIaWRxiJE=
-  # on:
-  #   tags: true
-  server: https://test.pypi.org/legacy/
-  distributions: "sdist bdist_wheel"
+ - provider: script
+   script: ci/pypi_upload.sh
+   skip_cleanup: true
+   on:
+     tags: true
 
 before_cache:
   # Travis can't cache files that are not readable by "others"

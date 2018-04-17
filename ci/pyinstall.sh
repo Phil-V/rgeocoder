@@ -50,7 +50,7 @@ function pyenv_install() {
 
 
 if [[ $WHEELPLATFORM == *"manylinux"* ]]; then
-    echo "skipping pyenv install"
+    echo "Skipping pyenv install"
 else
     if [ -z ${PYENV+x} ]; then
         # This is for local testing. You can change the default to match your system.
