@@ -17,6 +17,7 @@ A lightweight offline reverse geocoder implemented in Rust with
 Based on [llambda/rust-reverse-geocoder](https://github.com/llambda/rust-reverse-geocoder) and
 [thampiman/reverse-geocoder](https://github.com/thampiman/reverse-geocoder).
 
+*Note*: Still WIP, not deployed on pypi yet.
 
 Basic usage
 -----------
