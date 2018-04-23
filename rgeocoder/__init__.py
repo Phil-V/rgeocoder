@@ -12,11 +12,12 @@ Basic usage:
    >>> r.name == 'Brussels' and r.cc == 'BE'
    True
 
+The default dataset includes cities with a population greater than 1000.
 See http://download.geonames.org/export/dump/readme.txt for more
 information on the dataset.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 from os.path import join, dirname
 # Guard against panic in the rust library if an absolute import of the
 # module is not possible. We want the python interpreter to handle this
@@ -27,11 +28,18 @@ from rgeocoder.exceptions import InitializationError as _  # noqa: F401
 from rgeocoder._rgeocoder import RustReverseGeocoder as _RustReverseGeocoder
 
 __version__ = '0.1.0'
-__all__ = ['ReverseGeocoder', 'ReverseGeocoderResult']
+__all__ = ['ReverseGeocoder', 'Location']
 
 
 class ReverseGeocoder(object):
-    """"""
+    """Reverse geocode coordinates into city and country names.
+
+    :param path: (optional) a path to a custom dataset.
+    :type path: string
+    :param lazy: (optional) wait for the first query to load the dataset
+        (default) or load it immediately on init (if set to False)
+    :type lazy: bool
+    """
 
     def __init__(self, path=None, lazy=True):
         if path is not None:
@@ -44,12 +52,12 @@ class ReverseGeocoder(object):
     def find(self, lat, lon):
         """Find the location closest to the coordinates.
 
-        Returns a :class:`ReverseGeocoderResult` object representing
+        Returns a :class:`Location` object representing
         a dataset entry.
         """
         result = self._geocoder.find(lat, lon)
         if result:
-            return ReverseGeocoderResult(*result)
+            return Location(*result)
 
     def _initialize(self):
         self._rust_geocoder = _RustReverseGeocoder(self._path)
@@ -63,8 +71,8 @@ class ReverseGeocoder(object):
             return self._rust_geocoder
 
 
-class ReverseGeocoderResult(object):
-    """Reverse geocoder dataset entry."""
+class Location(object):
+    """A location found in the dataset."""
 
     def __init__(self, lat, lon, name, admin1, admin2, cc):
         #: Float of the location's latitude
@@ -81,7 +89,7 @@ class ReverseGeocoderResult(object):
         self.cc = cc
 
     def __repr__(self):
-        return '<ReverseGeocoderResult [{lat:.4f}, {lon:.4f}]>'.format(
+        return '<Location [{lat:.4f}, {lon:.4f}]>'.format(
             lat=self.lat,
             lon=self.lon,
         )

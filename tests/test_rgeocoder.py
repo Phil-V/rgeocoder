@@ -56,7 +56,7 @@ def test_result(geocoder):
     assert result.cc == 'DJ'
     assert result.lat == 12.42167
     assert result.lon == 42.89556
-    assert result.__repr__() == '<ReverseGeocoderResult [12.4217, 42.8956]>'
+    assert result.__repr__() == '<Location [12.4217, 42.8956]>'
 
 
 def test_wrong_type(geocoder):
