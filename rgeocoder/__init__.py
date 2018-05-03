@@ -27,7 +27,7 @@ from os.path import join, dirname
 from rgeocoder.exceptions import InitializationError as _  # noqa: F401
 from rgeocoder._rgeocoder import RustReverseGeocoder as _RustReverseGeocoder
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __all__ = ['ReverseGeocoder', 'Location']
 
 
