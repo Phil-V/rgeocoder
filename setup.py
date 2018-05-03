@@ -51,7 +51,7 @@ setup(
         )],
     keywords='rgeocoder',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
@@ -60,6 +60,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Rust',
     ],
     test_suite='tests',
     tests_require=test_requirements,
