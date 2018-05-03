@@ -40,16 +40,16 @@ def empty_csv(tmpdir_factory):
 
 
 def test_can_reverse_geocode(geocoder):
-    result = geocoder.find(43.25338, 2.17808)
+    result = geocoder.nearest(43.25338, 2.17808)
     assert result.name == 'Alzonne'
-    result = geocoder.find(43.25338, 2.17808)
+    result = geocoder.nearest(43.25338, 2.17808)
     assert result.name == 'Alzonne'
-    result = geocoder.find(-6.16394, 39.19793)
+    result = geocoder.nearest(-6.16394, 39.19793)
     assert result.name == 'Zanzibar'
 
 
 def test_result(geocoder):
-    result = geocoder.find(12.42167, 42.89556)
+    result = geocoder.nearest(12.42167, 42.89556)
     assert result.name == 'Alaili Dadda`'
     assert result.admin1 == 'Obock'
     assert result.admin2 == ''
@@ -61,7 +61,7 @@ def test_result(geocoder):
 
 def test_wrong_type(geocoder):
     with pytest.raises(TypeError):
-        geocoder.find('foo', 'bar')
+        geocoder.nearest('foo', 'bar')
 
 
 def test_cant_open_file():
@@ -76,4 +76,4 @@ def test_cant_parse_file(invalid_csv):
 
 def test_empty_csv(empty_csv):
     rg = rgeocoder.ReverseGeocoder(path=str(empty_csv))
-    assert rg.find(43.25338, 2.17808) is None
+    assert rg.nearest(43.25338, 2.17808) is None

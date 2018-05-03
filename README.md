@@ -23,7 +23,7 @@ pip install rgeocoder
 ```py
 >>> from rgeocoder import ReverseGeocoder
 >>> rg = ReverseGeocoder()
->>> r = rg.find(41.891929,12.511331)  # lat, lon
+>>> r = rg.nearest(41.891929,12.511331)  # lat, lon
 >>> print(r.name, r.cc)
 'Rome IT'
 >>> print(r.lat, r.lon)

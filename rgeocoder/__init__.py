@@ -8,7 +8,7 @@ implemented in Rust.
 Basic usage:
    >>> from rgeocoder import ReverseGeocoder
    >>> rg = ReverseGeocoder()
-   >>> r = rg.find(50.844992, 4.349990)  # lat, lon
+   >>> r = rg.nearest(50.844992, 4.349990)  # lat, lon
    >>> r.name == 'Brussels' and r.cc == 'BE'
    True
 
@@ -49,7 +49,7 @@ class ReverseGeocoder(object):
         if not lazy:
             self._initialize()
 
-    def find(self, lat, lon):
+    def nearest(self, lat, lon):
         """Find the location closest to the coordinates.
 
         Returns a :class:`Location` object representing
