@@ -1,4 +1,4 @@
-#![feature(proc_macro, specialization)]
+#![feature(proc_macro, specialization, proc_macro_path_invoc)]
 extern crate failure;
 extern crate kdtree;
 #[macro_use]
