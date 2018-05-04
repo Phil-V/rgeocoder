@@ -3,7 +3,6 @@ RGeocoder: a reverse geocoding module for Python
 
 [![PyPI version](https://img.shields.io/pypi/v/rgeocoder.svg)](https://pypi.python.org/pypi/rgeocoder)
 [![Build Status](https://img.shields.io/travis/Phil-V/rgeocoder.svg)](https://travis-ci.org/Phil-V/rgeocoder)
-[![Updates](https://pyup.io/repos/github/Phil-V/rgeocoder/shield.svg)](https://pyup.io/repos/github/Phil-V/rgeocoder/)
 
 A lightweight offline reverse geocoder implemented in Rust with
 [pyo3](https://github.com/PyO3/pyo3) python bindings.
