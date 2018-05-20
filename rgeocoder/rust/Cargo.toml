@@ -13,4 +13,4 @@ kdtree = "0.4.0"
 quick-csv = "0.1.6"
 rustc-serialize = "0.3.22"
 failure = "0.1.1"
-pyo3 = { git = "https://github.com/PyO3/pyo3", rev = "9dc76610b92c3f52f73ec4d26a9e9154407e6345" }
+pyo3 = "0.2.7"
