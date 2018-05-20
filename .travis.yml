@@ -69,7 +69,7 @@ matrix:
     # - env: TARGET=x86_64-apple-darwin PYENV='3.6.5,3.5.5,2.7.15' WHEELPLATFORM=macosx_10_11_x86_64
     #   os: osx
     #   osx_image: xcode7.3
-    - env: TARGET=x86_64-apple-darwin PYENV='3.6.5,3.5.5,2.7.15' WHEELPLATFORM=macosx_10_12_x86_64
+    - env: TARGET=x86_64-apple-darwin PYENV='3.6.5,3.5.5,2.7.15' WHEELPLATFORM=macosx_10_12_x86_64 SDIST=true
       os: osx
       osx_image: xcode8.3
 

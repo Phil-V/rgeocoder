@@ -42,6 +42,9 @@ pyenv_build_test_bundle() {
         make clean
         pip install -q -r requirements_dev.txt
         python setup.py clean
+        if [ "$SDIST" = true ]; then
+          python setup.py sdist
+        fi
         python setup.py build_ext
         if [ -z ${WHEELPLATFORM+x} ]; then
             python setup.py bdist_wheel
@@ -49,6 +52,7 @@ pyenv_build_test_bundle() {
             python setup.py bdist_wheel --plat-name="$WHEELPLATFORM"
         fi
         cp dist/*.whl wheelhouse
+        cp dist/*.tar.gz wheelhouse
         python setup.py develop
         python setup.py test
         python setup.py check
@@ -67,7 +71,7 @@ if [ -z ${TARGET+x} ]; then
     echo "TARGET is not set. Defaulting to x86_64-unknown-linux-gnu"
     export TARGET='x86_64-unknown-linux-gnu'
     # This is for local testing. You can change the default to match your system.
-else 
+else
     echo "TARGET is $TARGET"
 fi
 
@@ -80,7 +84,7 @@ if [ -z ${RUSTRELEASE+x} ]; then
     echo "RUSTRELEASE is not set. Defaulting to stable"
     export RUSTRELEASE=stable
     # This is for local testing. You can change the default to match your system.
-else 
+else
     echo "RUSTRELEASE is $RUSTRELEASE"
 fi
 
