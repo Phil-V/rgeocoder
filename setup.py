@@ -11,10 +11,10 @@ except ImportError:
     print(subprocess.check_output(["pip", "install", "setuptools_rust"]))
     from setuptools_rust import RustExtension, Binding
 
-with open('README.md') as readme_file:
+with open('README.rst') as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.md') as history_file:
+with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = []
@@ -29,7 +29,6 @@ setup(
     version='0.1.2',
     description="A lightweight offline reverse geocoder implemented in Rust.",
     long_description=readme + '\n\n' + history,
-    long_description_content_type='text/markdown',
     author="Phil V.",
     author_email='philippe@arcadian.be',
     url='https://github.com/Phil-V/rgeocoder',
