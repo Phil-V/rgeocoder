@@ -48,4 +48,4 @@ after_test:
   appveyor:
     commands:
     - $<RUN_ENV> $<PYTHON> -m pip install --upgrade twine urllib3[secure]
-    - $<RUN_ENV> $<PYTHON> -m twine upload --repository-url https://test.pypi.org/legacy/ dist\*
+    - $<RUN_ENV> $<PYTHON> -m twine upload dist\*
