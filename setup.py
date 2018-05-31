@@ -26,7 +26,7 @@ test_requirements = [
 
 setup(
     name='rgeocoder',
-    version='0.1.2',
+    version='0.1.3',
     description="A lightweight offline reverse geocoder implemented in Rust.",
     long_description=readme + '\n\n' + history,
     author="Phil V.",

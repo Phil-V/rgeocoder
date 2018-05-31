@@ -151,7 +151,7 @@ dependencies = [
 
 [[package]]
 name = "rgeocoder"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "kdtree 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
