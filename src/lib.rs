@@ -1,48 +1,46 @@
-#![feature(proc_macro, specialization, proc_macro_path_invoc)]
-extern crate failure;
-extern crate kdtree;
+// #![feature(proc_macro, specialization, proc_macro_path_invoc)]
 #[macro_use]
 extern crate pyo3;
 extern crate quick_csv;
 extern crate rustc_serialize;
+extern crate kdtree;
 
 use pyo3::prelude::*;
-use failure::Fail;
 
 mod geocoder;
 use geocoder::ReverseGeocoder;
 use geocoder::ErrorKind;
+
 
 // Will panic if not found in sys.path.
 import_exception!(rgeocoder.exceptions, InitializationError);
 import_exception!(rgeocoder.exceptions, CsvReadError);
 import_exception!(rgeocoder.exceptions, CsvParseError);
 
-impl std::convert::From<geocoder::Error> for PyErr {
-    fn from(error: geocoder::Error) -> PyErr {
-        match error.kind() {
-            ErrorKind::CsvReadError => CsvReadError::new(format!("{}", error)).into(),
-            ErrorKind::CsvParseError => CsvParseError::new(format!("{}", error)).into(),
-            ErrorKind::InitializationError => InitializationError::new(format!("{}", error)).into(),
+impl std::convert::From<geocoder::ErrorKind> for PyErr {
+    fn from(error: geocoder::ErrorKind) -> PyErr {
+        match error {
+            ErrorKind::CsvReadError(_) => CsvReadError::new_err(error.to_string()).into(),
+            ErrorKind::CsvParseError(_) => CsvParseError::new_err(error.to_string()).into(),
+            ErrorKind::InitializationError(_) => InitializationError::new_err(error.to_string()).into(),
         }
     }
 }
 
-#[py::class]
+// todo: rework this to avoid redudant geocoder object
+// or maybe leave as is but emphasize its role as a wrapper
+
+#[pyclass]
 struct RustReverseGeocoder {
-    geocoder: ReverseGeocoder,
-    token: PyToken,
+    geocoder: ReverseGeocoder
 }
 
-#[py::methods]
+#[pymethods]
 impl RustReverseGeocoder {
     #[new]
-    fn __new__(obj: &PyRawObject, path: &str) -> PyResult<()> {
+    fn py_new(path: &str) -> PyResult<Self> {
         let geocoder = ReverseGeocoder::new(path)?;
-        obj.init(|token| RustReverseGeocoder {
-            geocoder: geocoder,
-            token: token,
-        })
+        Ok(RustReverseGeocoder { geocoder })
     }
 
     fn find(&self, lat: f64, lon: f64) -> PyResult<Option<(f64, f64, &str, &str, &str, &str)>> {
@@ -61,7 +59,8 @@ impl RustReverseGeocoder {
     }
 }
 
-#[py::modinit(_rgeocoder)]
+#[pymodule]
+#[pyo3(name = "_rgeocoder")]
 fn init_mod(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<RustReverseGeocoder>()?;
     Ok(())
