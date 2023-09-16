@@ -12,6 +12,6 @@ crate-type = ["cdylib"]
 [dependencies]
 pyo3 = "0.19.0"
 kdtree = "0.7.0"
-quick-csv = "0.1.6"
-rustc-serialize = "0.3.22"
 thiserror = "1.0"
+csv = "1.2.2"
+serde = { version = "1.0.188", features = ["derive"] }

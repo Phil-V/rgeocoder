@@ -1,8 +1,8 @@
 // #![feature(proc_macro, specialization, proc_macro_path_invoc)]
 #[macro_use]
 extern crate pyo3;
-extern crate quick_csv;
-extern crate rustc_serialize;
+extern crate serde;
+extern crate csv;
 extern crate kdtree;
 
 use pyo3::prelude::*;

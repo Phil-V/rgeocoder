@@ -3,24 +3,25 @@
 
 use kdtree::KdTree;
 use kdtree::distance::squared_euclidean;
-use quick_csv;
 use thiserror::Error;
 use std;
+use csv;
+use serde::Deserialize;
 
 
 #[derive(Error, Debug)]
 pub enum ErrorKind {
     #[error("Cannot open the locations csv file.")]
-    CsvReadError(#[source] quick_csv::error::Error),
+    CsvReadError(#[source] std::io::Error),
     #[error("Cannot parse the locations csv file.")]
-    CsvParseError(#[source] quick_csv::error::Error),
+    CsvParseError(#[source] csv::Error),
     #[error("Cannot initialize the KdTree.")]
     InitializationError(#[source] kdtree::ErrorKind),
 }
 
 type Result<T> = std::result::Result<T, ErrorKind>;
 
-#[derive(Debug, Clone, PartialEq, RustcDecodable, RustcEncodable)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct Record {
     pub lat: f64,
     pub lon: f64,
@@ -38,15 +39,12 @@ impl Locations {
     pub fn from_file(path: &str) -> Result<Locations> {
         let mut records = Vec::new();
 
-        let reader = quick_csv::Csv::from_file(path)
-            .map_err(ErrorKind::CsvReadError)?
-            .has_header(true);
+        let input = std::fs::File::open(path).map_err(ErrorKind::CsvReadError)?;
+        let buffered = std::io::BufReader::new(input);
+        let mut reader = csv::Reader::from_reader(buffered);
 
-        for read_record in reader {
-            let record: Record = read_record
-                .map_err(ErrorKind::CsvParseError)?
-                .decode()
-                .map_err(ErrorKind::CsvParseError)?;
+        for line in reader.deserialize() {
+            let record: Record = line.map_err(ErrorKind::CsvParseError)?;
             records.push(([record.lat, record.lon], record));
         }
 
