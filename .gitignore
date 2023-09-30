@@ -65,9 +65,14 @@ target/
 .venv/
 venv/
 
-
 # Wheelhouse
 wheelhouse/
 
 .DS_Store
 .pytest_cache
+
+# PyCharm
+.idea/
+
+# VSCode
+.vscode/
