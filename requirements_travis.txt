@@ -1,2 +1,0 @@
-cryptography>=1.7
-PyYAML>=3.11
