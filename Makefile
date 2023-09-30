@@ -1,4 +1,4 @@
-.PHONY: clean clean-test clean-pyc clean-build clean-venv docs help install dist test test-all
+.PHONY: help clean clean-build clean-pyc clean-test clean-venv lint coverage test test-all dev venv docs servedocs dist
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
@@ -28,13 +28,11 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test clean-venv ## remove all build, test, coverage, Python artifacts and virtualenv
+clean: clean-build clean-pyc clean-test clean-venv  ## remove all builds, artifacts and local virtualenv
 
 clean-build: ## remove build artifacts
-	rm -fr build/
-	rm -fr dist/
-	rm -fr rgeocoder/rust/target
-	rm -fr .eggs/
+	rm -fr target/
+	rm -f python/rgeocoder/*.so
 	rm -f *.so *.dylib *.dll
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -fr {} +
@@ -50,50 +48,45 @@ clean-test: ## remove test and coverage artifacts
 	rm -f .coverage
 	rm -fr htmlcov/
 
-clean-venv:
-	rm -rf venv
+clean-venv: ## remove the local virtual environment
+	rm -rf .venv
 
-lint: venv ## check style with flake8
-	venv/bin/python -m flake8 rgeocoder tests
+lint: venv ## check for formatting issues with flake8
+	.venv/bin/python -m flake8 python/rgeocoder tests
 
-test: venv ## This will use py.test because of pytest-runner
-	venv/bin/python setup.py build_ext
-	venv/bin/python setup.py check
-	venv/bin/python setup.py test
+coverage: venv dev ## check code coverage with the default Python
+	.venv/bin/python -m coverage run --source rgeocoder -m pytest
 
-venv:  ## set up a virtualenv that will by python and install dependencies
-	python -m virtualenv venv || python -m venv venv
-	venv/bin/python -m pip install -r requirements_dev.txt
-
-test-all: venv ## run tests on every Python version with tox
-	venv/bin/tox
-
-coverage: venv ## check code coverage quickly with the default Python
-	venv/bin/python -m coverage run --source rgeocoder -m pytest
-
-		venv/bin/python -m coverage report -m
-		venv/bin/python -m coverage html
+		.venv/bin/python -m coverage report -m
+		.venv/bin/python -m coverage html
 		$(BROWSER) htmlcov/index.html
+
+test: venv dev ## run tests
+	cargo test
+	.venv/bin/python -m pytest
+
+test-all: venv ## run tests on multiple Python versions using tox
+	.venv/bin/tox
+
+dev: venv ## build the Rust extension, making it accessible to Python
+	.venv/bin/python -m maturin develop
+
+venv:  ## set up a virtualenv and install dependencies
+	python -m virtualenv .venv || python -m venv .venv
+	.venv/bin/python -m pip install -r requirements_dev.txt
 
 docs: venv ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/rgeocoder.rst
 	rm -f docs/modules.rst
-	venv/bin/python -m sphinx-apidoc -o docs/ rgeocoder
+	.venv/bin/sphinx-apidoc -o docs/ python/rgeocoder
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
 
 servedocs: venv docs ## compile the docs watching for changes
-	venv/bin/python -m watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+	.venv/bin/python -m watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
-dist: clean venv ## builds source and wheel package
-	venv/bin/python setup.py sdist
-	venv/bin/python setup.py build_ext
-	venv/bin/python setup.py bdist_wheel
-	ls -l dist
-
-install: venv clean ## install the package to the active Python's site-packages
-	venv/bin/python setup.py build_ext
-	venv/bin/python setup.py install
-
-local-test: clean test coverage dist install
+dist: clean venv ## build source and wheel packages
+	.venv/bin/python -m maturin sdist
+	.venv/bin/python -m maturin build
+	ls -l target/wheels
