@@ -84,4 +84,5 @@ servedocs: venv dev ## generate HTML docs and watch for changes
 dist: clean venv ## build source and wheel packages
 	.venv/bin/python -m maturin sdist
 	.venv/bin/python -m maturin build
+	.venv/bin/twine check target/wheels/*
 	ls -l target/wheels
