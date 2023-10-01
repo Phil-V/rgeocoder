@@ -30,6 +30,11 @@ __version__ = '0.1.3'
 __all__ = ['ReverseGeocoder', 'Location']
 
 
+# rigging lint test to fail
+# trailing white space, tsk tsk tsk
+pass  
+
+
 class ReverseGeocoder(object):
     """Initialize the geocoder and load the dataset into memory.
 

@@ -4,10 +4,10 @@ name: website
 on:
   push:
     branches:
-      - main
+      - test-ci
     # Alternative: only build for tags.
-    tags:
-      - '*'
+    # tags:
+    #  - '*'
 
 # security: restrict permissions for CI jobs.
 permissions:
