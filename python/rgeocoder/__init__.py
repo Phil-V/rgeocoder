@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Reverse Geocoder module
-
-rgeocoder is a lightweight reverse geocoding module for Python
+*rgeocoder* is a lightweight reverse geocoding module for Python
 implemented in Rust.
 
 Basic usage:
@@ -19,6 +17,7 @@ information on the dataset.
 
 from __future__ import absolute_import, unicode_literals
 from os.path import join, dirname
+import typing
 # Guard against panic in the rust library if an absolute import of the
 # module is not possible. We want the python interpreter to handle this
 # instead.
@@ -32,16 +31,23 @@ __all__ = ['ReverseGeocoder', 'Location']
 
 
 class ReverseGeocoder(object):
-    """Reverse geocode coordinates into city and country names.
+    """Initialize the geocoder and load the dataset into memory.
 
-    :param path: (optional) a path to a custom dataset.
-    :type path: string
-    :param lazy: (optional) wait for the first query to load the dataset
-        (default) or load it immediately on init (if set to False)
-    :type lazy: bool
+    Args:
+        path (str, optional): path to a custom dataset
+        lazy (bool): lazy load until the first query (True, default)
+            or load the dataset immediately on initialization (False)
+
+    Raises:
+        `rgeocoder.exceptions.InitializationError`:
+            catch-all for initialization-related errors.
+        `rgeocoder.exceptions.CsvReadError`:
+            if the csv file cannot be read.
+        `rgeocoder.exceptions.CsvParseError`:
+            if the contents of the csv file cannot be parsed.
     """
 
-    def __init__(self, path=None, lazy=True):
+    def __init__(self, path: typing.Optional[str] = None, lazy: bool = True):
         if path is not None:
             self._path = path
         else:
@@ -49,11 +55,15 @@ class ReverseGeocoder(object):
         if not lazy:
             self._initialize()
 
-    def nearest(self, lat, lon):
-        """Find the location closest to the coordinates.
+    def nearest(self, lat: float, lon: float) -> typing.Optional['Location']:
+        """Find the location closest to the provided coordinates.
 
-        Returns a :class:`Location` object representing
-        a dataset entry.
+        Args:
+            lat (float): latitude
+            lon (float): longitude
+
+        Returns:
+            :class:`Location` object representing a dataset entry.
         """
         result = self._geocoder.find(lat, lon)
         if result:
@@ -72,21 +82,28 @@ class ReverseGeocoder(object):
 
 
 class Location(object):
-    """A location found in the dataset."""
+    """A location found in the dataset.
+
+    Attributes:
+        lat (float): latitude
+        lon (float): longitude
+        name (str): name
+        admin1 (str): First-level administrative division
+        admin2 (str): Second-level administrative division
+        cc (str): ISO-3166 2-letter country code
+
+    Note:
+        `admin1` and `admin2` are not included for every location
+        in the dataset and will sometimes return an empty string.
+    """
 
     def __init__(self, lat, lon, name, admin1, admin2, cc):
-        #: Float of the location's latitude
-        self.lat = lat
-        #: Float of the location's longitude
-        self.lon = lon
-        #: The location name
-        self.name = name
-        #: First-level administrative division
-        self.admin1 = admin1
-        #: Second-level administrative division
-        self.admin2 = admin2
-        #: Country code
-        self.cc = cc
+        self.lat: float = lat
+        self.lon: float = lon
+        self.name: str = name
+        self.admin1: str = admin1
+        self.admin2: str = admin2
+        self.cc: str = cc
 
     def __repr__(self):
         return '<Location [{lat:.4f}, {lon:.4f}]>'.format(

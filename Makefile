@@ -2,8 +2,6 @@
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
-if os.environ.get('TRAVIS_BUILD_NUMBER'):
-	exit(0)
 try:
 	from urllib import pathname2url
 except:
@@ -55,7 +53,7 @@ clean-venv: ## remove the local virtual environment
 lint: venv ## check for formatting issues with flake8
 	.venv/bin/python -m flake8 python/rgeocoder tests
 
-coverage: venv dev ## check code coverage with the default Python
+coverage: venv dev ## check test coverage
 	.venv/bin/python -m coverage run --source rgeocoder -m pytest
 
 		.venv/bin/python -m coverage report -m
@@ -76,16 +74,12 @@ venv:  ## set up a virtualenv and install dependencies
 	python -m virtualenv .venv || python -m venv .venv
 	.venv/bin/python -m pip install -r requirements_dev.txt
 
-docs: venv ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/rgeocoder.rst
-	rm -f docs/modules.rst
-	.venv/bin/sphinx-apidoc -o docs/ python/rgeocoder
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
+docs: venv dev ## generate HTML documentation
+	rm -rf _docs
+	.venv/bin/pdoc --no-show-source --no-search --docformat google --output-dir _docs rgeocoder rgeocoder.exceptions 
 
-servedocs: venv docs ## compile the docs watching for changes
-	.venv/bin/python -m watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+servedocs: venv dev ## generate HTML docs and watch for changes
+	.venv/bin/pdoc --no-show-source --no-search --docformat google rgeocoder rgeocoder.exceptions
 
 dist: clean venv ## build source and wheel packages
 	.venv/bin/python -m maturin sdist

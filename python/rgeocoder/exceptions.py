@@ -2,11 +2,11 @@
 
 
 class GeocoderException(Exception):
-    """Base class for all the reverse geocoder module exceptions."""
+    """Base class for all the `rgeocoder` module exceptions."""
 
 
 class InitializationError(GeocoderException):
-    """Catching this error will catch all initialization-related errors."""
+    """Catch-all for `rgeocoder.ReverseGeocoder` initialization errors."""
 
 
 class CsvReadError(InitializationError):
