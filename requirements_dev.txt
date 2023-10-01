@@ -1,8 +1,8 @@
 pip>=23.2.1
 bumpversion>=0.6.0
-flake8>=6.1.0
-tox>=4.11.3
-coverage>=7.3.1
-pdoc>=14.1.0
+flake8>=3.8.0
+tox>=3.8.0
+coverage>=7.0.0
+pdoc>=13.0.0
 pytest>=7.4.2
 maturin>=1.2.3,<2.0
