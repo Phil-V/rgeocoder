@@ -9,7 +9,7 @@ description = "A lightweight offline reverse geocoder implemented in Rust."
 readme = "README.rst"
 requires-python = ">=3.7"
 license = {text = "MIT"}
-keywords = ["reverse-geocoder", "geocoder", "maturin", "pyo3"]
+keywords = ["reverse-geocoder", "reverse-geocoding", "geocoder", "maturin", "pyo3"]
 authors = [
     {name = "Phil V.", email = "philippe@arcadian.be"},
 ]
@@ -22,9 +22,9 @@ classifiers = [
     'Programming Language :: Python :: 3',
 ]
 [project.urls]
-"Source" = "https://github.com/Phil-V/rgeocoder"
-Changelog = "https://github.com/Phil-V/rgeocoder/blob/master/HISTORY.rst"
-
+"Documentation" = "https://phil-v.github.io/rgeocoder/"
+"Repository" = "https://github.com/Phil-V/rgeocoder"
+"History" = "https://github.com/Phil-V/rgeocoder/blob/master/HISTORY.rst"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
