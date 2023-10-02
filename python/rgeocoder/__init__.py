@@ -34,7 +34,8 @@ class ReverseGeocoder(object):
     """Initialize the geocoder and load the dataset into memory.
 
     Args:
-        path (str, optional): path to a custom dataset
+        path (str, optional): path to a custom csv dataset. Empty
+            datasets are not supported and will raise an exception.
         lazy (bool): lazy load until the first query (True, default)
             or load the dataset immediately on initialization (False)
 
@@ -55,7 +56,7 @@ class ReverseGeocoder(object):
         if not lazy:
             self._initialize()
 
-    def nearest(self, lat: float, lon: float) -> typing.Optional['Location']:
+    def nearest(self, lat: float, lon: float) -> 'Location':
         """Find the location closest to the provided coordinates.
 
         Args:
@@ -63,11 +64,10 @@ class ReverseGeocoder(object):
             lon (float): longitude
 
         Returns:
-            :class:`Location` object representing a dataset entry.
+            :class:`Location` object representing the nearest dataset entry.
         """
         result = self._geocoder.find(lat, lon)
-        if result:
-            return Location(*result)
+        return Location(*result)
 
     def _initialize(self):
         self._rust_geocoder = _RustReverseGeocoder(self._path)

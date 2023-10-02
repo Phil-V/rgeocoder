@@ -75,5 +75,5 @@ def test_cant_parse_file(invalid_csv):
 
 
 def test_empty_csv(empty_csv):
-    rg = rgeocoder.ReverseGeocoder(path=str(empty_csv))
-    assert rg.nearest(43.25338, 2.17808) is None
+    with pytest.raises(rgeocoder.exceptions.CsvParseError):
+        rgeocoder.ReverseGeocoder(path=str(empty_csv), lazy=False)

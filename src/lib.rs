@@ -1,16 +1,15 @@
 // #![feature(proc_macro, specialization, proc_macro_path_invoc)]
 #[macro_use]
 extern crate pyo3;
-extern crate serde;
 extern crate csv;
 extern crate kdtree;
+extern crate serde;
 
 use pyo3::prelude::*;
 
 mod geocoder;
-use geocoder::ReverseGeocoder;
 use geocoder::ErrorKind;
-
+use geocoder::ReverseGeocoder;
 
 // Will panic if not found in sys.path.
 import_exception!(rgeocoder.exceptions, InitializationError);
@@ -22,17 +21,17 @@ impl std::convert::From<geocoder::ErrorKind> for PyErr {
         match error {
             ErrorKind::CsvReadError(_) => CsvReadError::new_err(error.to_string()).into(),
             ErrorKind::CsvParseError(_) => CsvParseError::new_err(error.to_string()).into(),
-            ErrorKind::InitializationError(_) => InitializationError::new_err(error.to_string()).into(),
+            ErrorKind::CsvEmptyError() => CsvParseError::new_err(error.to_string()).into(),
+            ErrorKind::InitializationError(_) => {
+                InitializationError::new_err(error.to_string()).into()
+            }
         }
     }
 }
 
-// todo: rework this to avoid redudant geocoder object
-// or maybe leave as is but emphasize its role as a wrapper
-
 #[pyclass]
 struct RustReverseGeocoder {
-    geocoder: ReverseGeocoder
+    geocoder: ReverseGeocoder,
 }
 
 #[pymethods]

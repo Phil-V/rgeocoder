@@ -1,13 +1,12 @@
 // Originally based on
 // https://github.com/llambda/rust-reverse-geocoder/blob/master/src/geocoder.rs
 
-use kdtree::KdTree;
-use kdtree::distance::squared_euclidean;
-use thiserror::Error;
-use std;
 use csv;
+use kdtree::distance::squared_euclidean;
+use kdtree::KdTree;
 use serde::Deserialize;
-
+use std;
+use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum ErrorKind {
@@ -15,6 +14,8 @@ pub enum ErrorKind {
     CsvReadError(#[source] std::io::Error),
     #[error("Cannot parse the locations csv file.")]
     CsvParseError(#[source] csv::Error),
+    #[error("Csv file is empty.")]
+    CsvEmptyError(),
     #[error("Cannot initialize the KdTree.")]
     InitializationError(#[source] kdtree::ErrorKind),
 }
@@ -48,6 +49,10 @@ impl Locations {
             records.push(([record.lat, record.lon], record));
         }
 
+        if records.len() == 0 {
+            return Err(ErrorKind::CsvEmptyError());
+        }
+
         Ok(Locations { records })
     }
 }
@@ -77,11 +82,13 @@ impl ReverseGeocoder {
 
     pub fn search(&self, loc: &[f64; 2]) -> Option<&Record> {
         match self.tree.nearest(loc, 1, &squared_euclidean) {
-            Ok(nearest) => if nearest.is_empty() {
-                None
-            } else {
-                Some(&nearest[0].1)
-            },
+            Ok(nearest) => {
+                if nearest.is_empty() {
+                    None
+                } else {
+                    Some(&nearest[0].1)
+                }
+            }
             Err(_) => None,
         }
     }
