@@ -1,4 +1,4 @@
-.PHONY: help clean clean-build clean-pyc clean-test clean-venv lint coverage test test-all dev venv docs servedocs dist
+.PHONY: help clean clean-build clean-pyc clean-test clean-docs clean-venv lint coverage test test-all dev venv docs servedocs dist
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
@@ -26,7 +26,7 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test clean-venv  ## remove all builds, artifacts and local virtualenv
+clean: clean-build clean-pyc clean-test clean-docs clean-venv  ## remove all builds, artifacts and local virtualenv
 
 clean-build: ## remove build artifacts
 	rm -fr target/
@@ -46,6 +46,9 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
+
+clean-docs: ## remove html documentation files built by pdoc
+	rm -rf _docs
 
 clean-venv: ## remove the local virtual environment
 	rm -rf .venv
@@ -74,8 +77,7 @@ venv:  ## set up a virtualenv and install dependencies
 	python -m virtualenv .venv || python -m venv .venv
 	.venv/bin/python -m pip install -r requirements_dev.txt
 
-docs: venv dev ## generate HTML documentation
-	rm -rf _docs
+docs: venv dev clean-docs ## generate HTML documentation
 	.venv/bin/pdoc --no-show-source --no-search --docformat google --output-dir _docs rgeocoder rgeocoder.exceptions 
 
 servedocs: venv dev ## generate HTML docs and watch for changes
