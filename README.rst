@@ -1,20 +1,19 @@
 rgeocoder
 =========
 
-|badgepypi| |badgetravis|
+|badgepypi| |badgedocs| 
 
 .. |badgepypi| image:: https://img.shields.io/pypi/v/rgeocoder.svg
         :target: https://pypi.python.org/pypi/rgeocoder
         :alt: PyPI version
-.. |badgetravis| image:: https://img.shields.io/travis/Phil-V/rgeocoder.svg
-        :target: https://travis-ci.org/Phil-V/rgeocoder
-        :alt: Build Status
+
+.. |badgedocs| image:: https://img.shields.io/badge/docs-latest-blue
+        :target: https://phil-v.github.io/rgeocoder/
+        :alt: Documentation
 
 A lightweight offline reverse geocoder implemented in Rust with
-`pyo3 <https://github.com/PyO3/pyo3>`_ python bindings.
+`pyo3 <https://github.com/PyO3/pyo3>`_ Python bindings.
 
-Based on `llambda/rust-reverse-geocoder <https://github.com/llambda/rust-reverse-geocoder>`_
-and `thampiman/reverse-geocoder <https://github.com/thampiman/reverse-geocoder>`_.
 
 Basic usage
 -----------
@@ -54,11 +53,12 @@ License
 
 .. _MIT License: LICENSE
 
+
 Credits
 -------
 
+Rust implementation of the algorithm originally based on code from
+`llambda/rust-reverse-geocoder <https://github.com/llambda/rust-reverse-geocoder>`_.
 
-This package was created with Cookiecutter_ and the `mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish`: https://github.com/mckaymatt/cookiecutter-pypackage-rust-cross-platform-publish
+Inspired by and meant to act as an alternative to
+`thampiman/reverse-geocoder <https://github.com/thampiman/reverse-geocoder>`_.
