@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "rgeocoder"
-version = "0.1.3"
+version = "0.1.4"
 description = "A lightweight offline reverse geocoder implemented in Rust."
 readme = "README.rst"
 requires-python = ">=3.7"
