@@ -1,7 +1,7 @@
 History
 -------
 
-0.1.5 (2023-10-05)
+0.1.6 (2023-10-05)
 ******************
 
 * Switched to maturin as a build and packaging system.

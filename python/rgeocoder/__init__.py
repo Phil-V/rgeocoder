@@ -26,7 +26,7 @@ import typing
 from rgeocoder.exceptions import InitializationError as _  # noqa: F401
 from rgeocoder._rgeocoder import RustReverseGeocoder as _RustReverseGeocoder
 
-__version__ = '0.1.5'
+__version__ = '0.1.6'
 __all__ = ['ReverseGeocoder', 'Location']
 
 
