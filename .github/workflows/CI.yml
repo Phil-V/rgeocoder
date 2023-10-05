@@ -3,7 +3,6 @@ name: CI
 
 on:
   push:
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -27,7 +26,7 @@ jobs:
   # Build artifacts when pushing to master branch or version tags
   linux:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: [tests]
     strategy:
       matrix:
@@ -52,7 +51,7 @@ jobs:
 
   windows:
     runs-on: windows-latest
-    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: [tests]
     strategy:
       matrix:
@@ -78,7 +77,7 @@ jobs:
   macos:
     runs-on: macos-latest
     needs: [tests]
-    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
+    if: startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         target: [x86_64, aarch64]
@@ -101,7 +100,7 @@ jobs:
 
   sdist:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: [tests]
     steps:
       - uses: actions/checkout@v3
@@ -127,8 +126,6 @@ jobs:
           name: wheels
       - name: Publish to PyPI
         uses: PyO3/maturin-action@v1
-        env:
-          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         with:
           command: upload
           args: --non-interactive --skip-existing *
