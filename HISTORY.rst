@@ -5,7 +5,7 @@ History
 ******************
 
 * Switched to maturin as a build and packaging system.
-* Updated Rust code and dependencies to 2012 edition.
+* Updated Rust code and dependencies to 2021 edition.
     - source package can now be compiled 
       with stable Rust as opposed to nightly.
 * Dropped Python2 support.
