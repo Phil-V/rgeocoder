@@ -17,6 +17,7 @@ information on the dataset.
 
 from __future__ import absolute_import, unicode_literals
 from os.path import join, dirname
+from dataclasses import dataclass
 import typing
 # Guard against panic in the rust library if an absolute import of the
 # module is not possible. We want the python interpreter to handle this
@@ -30,7 +31,7 @@ __version__ = '0.1.6'
 __all__ = ['ReverseGeocoder', 'Location']
 
 
-class ReverseGeocoder(object):
+class ReverseGeocoder:
     """Initialize the geocoder and load the dataset into memory.
 
     Args:
@@ -81,7 +82,8 @@ class ReverseGeocoder(object):
             return self._rust_geocoder
 
 
-class Location(object):
+@dataclass
+class Location:
     """A location found in the dataset.
 
     Attributes:
@@ -97,16 +99,12 @@ class Location(object):
         in the dataset and will sometimes return an empty string.
     """
 
-    def __init__(self, lat, lon, name, admin1, admin2, cc):
-        self.lat: float = lat
-        self.lon: float = lon
-        self.name: str = name
-        self.admin1: str = admin1
-        self.admin2: str = admin2
-        self.cc: str = cc
+    lat: float
+    lon: float
+    name: str
+    admin1: str
+    admin2: str
+    cc: str
 
     def __repr__(self):
-        return '<Location [{lat:.4f}, {lon:.4f}]>'.format(
-            lat=self.lat,
-            lon=self.lon,
-        )
+        return f"<Location [{self.lat:.4f}, {self.lon:.4f}]>"
