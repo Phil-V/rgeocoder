@@ -28,7 +28,7 @@ jobs:
     # Build artifacts when pushing to master branch or version tags
     linux:
         runs-on: ubuntu-latest
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/CI')
         needs: [tests]
         strategy:
             matrix:
@@ -53,7 +53,7 @@ jobs:
 
     windows:
         runs-on: windows-latest
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/CI')
         needs: [tests]
         strategy:
             matrix:
@@ -79,7 +79,7 @@ jobs:
     macos:
         runs-on: macos-latest
         needs: [tests]
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/CI')
         strategy:
             matrix:
                 target: [x86_64, aarch64]
@@ -102,7 +102,7 @@ jobs:
 
     sdist:
         runs-on: ubuntu-latest
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/CI')
         needs: [tests]
         steps:
             - uses: actions/checkout@v4
