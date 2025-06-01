@@ -58,9 +58,8 @@ impl RustReverseGeocoder {
     }
 }
 
-#[pymodule]
-#[pyo3(name = "_rgeocoder")]
-fn init_mod(_py: Python, m: &PyModule) -> PyResult<()> {
+#[pymodule(name = "_rgeocoder")]
+fn init_mod(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<RustReverseGeocoder>()?;
     Ok(())
 }

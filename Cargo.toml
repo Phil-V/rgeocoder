@@ -10,7 +10,7 @@ name = "rgeocoder"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.19.0"
+pyo3 = "0.24.1"
 kdtree = "0.7.0"
 thiserror = "1.0"
 csv = "1.2.2"
